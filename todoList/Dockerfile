@@ -1,16 +1,12 @@
-FROM ubuntu:latest AS build
-
-RUN apt-get update 
-RUN apt-get install openjdk-18.0.2.1-jdk -y 
-
+# Estágio de construção
+FROM openjdk:18
+WORKDIR /app
 COPY . .
+RUN apt-get update && apt-get install -y maven
+RUN mvn clean install
 
-RUN apt-get install maven -y 
-RUN mvn clean install 
-
-FROM openjdk:18.0.2.1-jdk-slim
-EXPOSE 8080 
-
-COPY --from=build /target/todolist-1.0.0.jar app.jar
-
-ENTRYPOINT [ "java", "-jar", "app.jar"]
+# Estágio de execução
+FROM openjdk:18-jdk-slim
+EXPOSE 8080
+COPY --from=0 /app/target/todolist-1.0.0.jar /app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
