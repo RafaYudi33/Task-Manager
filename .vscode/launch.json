@@ -6,6 +6,12 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TodoListApplication",
+            "request": "launch",
+            "mainClass": "br.com.rafaelyudi.todoList.TodoListApplication"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
