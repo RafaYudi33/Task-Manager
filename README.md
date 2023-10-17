@@ -1,4 +1,4 @@
-# ToDo List API
+# To Do List API
 
 Uma API REST simples para gerenciar tarefas pessoais.
 
