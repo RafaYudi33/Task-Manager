@@ -6,6 +6,22 @@ Uma API REST simples para gerenciar tarefas pessoais.
 
 Esta API permite a criação, leitura e atualização de tarefas em uma lista de afazeres. Foi construída com Spring Boot e utiliza o banco de dados H2 para armazenar as tarefas.
 
+
+### Recursos Usuários
+:ballot_box_with_check:Cadastrar novos usuários
+
+
+| Método HTTP | Endpoint       | Descrição                                 |
+|-------------|----------------|-------------------------------------------|
+|POST         | /users/        | Cadastra um novo Usuário                  |
+
+
+
+
+
+
+
+
 ### Recursos Tarefas
 :ballot_box_with_check:Buscar todas as tarefas 
 
@@ -17,11 +33,14 @@ Esta API permite a criação, leitura e atualização de tarefas em uma lista de
 
 | Método HTTP | Endpoint       | Descrição                                 |
 |-------------|----------------|-----------------------------------------|
-| GET         | /tasks         | Retorna todas as tarefas cadastradas    |
-| GET         | /task/id       | Retorna uma tarefa pelo ID do usuário   |
-| POST        | /task          | Cadastra uma nova tarefa                |
-| PUT         | /task/id       | Atualiza uma tarefa existente           |
-| DELETE      | /task/id       | Exclui uma tarefa existente pelo ID     |
+| GET         | /tasks/        | Retorna todas as tarefas cadastradas    |
+| GET         | /tasks/id      | Retorna lista de tarefas do usuário (IdUser passado no Basic Auth)  |
+| POST        | /tasks/        | Cadastra uma nova tarefa                |
+| PUT         | /tasks/id      | Atualiza uma tarefa existente (Autenticação do usuário pelo Basic Auth)   |
+| DELETE      | /tasks/id      | Exclui uma tarefa existente  (Autenticação do usuário pelo Basic Auth)    |
+
+
+
 
 ## Requisitos
 
