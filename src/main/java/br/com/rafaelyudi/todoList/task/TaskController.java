@@ -31,6 +31,11 @@ public class TaskController {
     @PostMapping("/")
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request){
         var idUser = request.getAttribute("idUser");
+       
+        if(idUser.equals("Unauthorized")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário e/ou senha incorretos"); 
+        }
+
         taskModel.setIdUser((UUID)idUser);
 
 
@@ -68,8 +73,8 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tarefa não encontrada");
         }
 
-        if(!task.getIdUser().equals(idUser)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não tem permissão para alterar esta tarefa"); 
+        if(idUser == "Unauthorized"||(!task.getIdUser().equals(idUser))){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não tem permissão para alterar esta tarefa"); 
         }
 
         Utils.copyPartialProp(taskModel, task);
@@ -82,12 +87,13 @@ public class TaskController {
         var task = this.taskRepository.findById(id).orElse(null); 
         var idUser = request.getAttribute("idUser"); 
 
+
         if(task == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tarefa não encontrada"); 
         }
 
-        if(!idUser.equals(task.getIdUser())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não tem permissão para excluir a tarefa"); 
+        if(idUser == "Unauthorized" ||(!idUser.equals(task.getIdUser()))){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não tem permissão para excluir a tarefa"); 
         }
 
         this.taskRepository.deleteById(id); 
