@@ -11,4 +11,5 @@ import java.util.List;
 public interface ITaskRepository extends JpaRepository<TaskModel, UUID> {
     TaskModel findByTitle(String title); 
     List<TaskModel> findByIdUser(UUID idUser);
+    void deleteById(UUID id);
 }
