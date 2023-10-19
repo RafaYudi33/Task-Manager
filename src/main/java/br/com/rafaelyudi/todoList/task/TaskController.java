@@ -56,6 +56,12 @@ public class TaskController {
         var taskCreated = this.taskRepository.save(taskModel); 
         return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);     
     }
+    
+    @GetMapping("")
+    public List<TaskModel> lisAllTasks(){
+        var tasks = this.taskRepository.findAll(); 
+        return tasks; 
+    }
 
     @GetMapping("/")
     public List<TaskModel> list(HttpServletRequest request){
@@ -63,6 +69,7 @@ public class TaskController {
         var tasks = this.taskRepository.findByIdUser((UUID) idUser); 
         return tasks;
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id){   
