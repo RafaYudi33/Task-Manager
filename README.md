@@ -7,7 +7,7 @@ Uma API REST simples para gerenciar tarefas pessoais.
 Esta API permite a criação, leitura e atualização de tarefas em uma lista de afazeres. Foi construída com Spring Boot e utiliza o banco de dados H2 para armazenar as tarefas.
 
 
-### Recursos Usuários
+## Recursos Usuários
 :ballot_box_with_check:Cadastrar novos usuários
 
 
@@ -18,14 +18,10 @@ Esta API permite a criação, leitura e atualização de tarefas em uma lista de
 
 
 
-
-
-
-
-### Recursos Tarefas
+## Recursos Tarefas
 :ballot_box_with_check:Buscar todas as tarefas 
 
-:ballot_box_with_check:Alterar uma tarefa de maneira parcial ou completa (Autenticação de usuario para alteração)
+:ballot_box_with_check:Alterar uma tarefa de maneira parcial ou completa 
 
 :ballot_box_with_check:Listar todas as tarefas de um usuário 
 
@@ -34,12 +30,13 @@ Esta API permite a criação, leitura e atualização de tarefas em uma lista de
 | Método HTTP | Endpoint       | Descrição                                 |
 |-------------|----------------|-----------------------------------------|
 | GET         | /tasks/        | Retorna todas as tarefas cadastradas    |
-| GET         | /tasks/id      | Retorna lista de tarefas do usuário (IdUser passado no Basic Auth)  |
-| POST        | /tasks/        | Cadastra uma nova tarefa                |
-| PUT         | /tasks/id      | Atualiza uma tarefa existente (Autenticação do usuário pelo Basic Auth)   |
-| DELETE      | /tasks/id      | Exclui uma tarefa existente  (Autenticação do usuário pelo Basic Auth)    |
+| GET         | /tasks/id      | Retorna lista de tarefas do usuário (c/ Autenticação de Usuário)  |
+| POST        | /tasks/        | Cadastra uma nova tarefa (c/ Autenticação de Usuário)               |
+| PUT         | /tasks/id      | Atualiza uma tarefa existente (c/ Autenticão de Usuário)   |
+| DELETE      | /tasks/id      | Exclui uma tarefa existente  (c/ Autenticação de Usuário)    |
 
 
+OBS: Todas as autenticações foram feitas através do Usuário e Senha sendo passados no Basic Auth da requisição. 
 
 
 ## Requisitos
