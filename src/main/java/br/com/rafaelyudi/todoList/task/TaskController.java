@@ -28,6 +28,9 @@ public class TaskController {
     @Autowired
     private ITaskRepository taskRepository; 
 
+    @Autowired
+    private TaskService taskService;
+
     @PostMapping("/")
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request){
         var idUser = request.getAttribute("idUser");
@@ -69,7 +72,11 @@ public class TaskController {
         var tasks = this.taskRepository.findByIdUser((UUID) idUser); 
         return tasks;
     }
-
+    
+    // @GetMapping("")
+    // public List<TaskModel> closeEnd(){
+    //    return taskService.findTasksCloseEnd();
+    // }
 
     @PutMapping("/{id}")
     public ResponseEntity update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id){   
