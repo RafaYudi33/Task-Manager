@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.rafaelyudi.todoList.EmailSender.SesEmailSender;
+import br.com.rafaelyudi.todoList.User.IUserRepository;
+import br.com.rafaelyudi.todoList.User.UserModel;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -30,6 +33,12 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private SesEmailSender sesEmailSender;
+
+    @Autowired
+    private IUserRepository userRepository;
 
     @PostMapping("/")
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request){
@@ -56,7 +65,20 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de término deve ser posterior a data de inicio");
         }
 
+
         var taskCreated = this.taskRepository.save(taskModel); 
+        // var tasksCLose = this.taskService.findTasksCloseEnd();
+        // if(!tasksCLose.isEmpty()){
+        //     var userOptional = this.userRepository.findById(taskCreated.getIdUser());
+        //     if (userOptional.isPresent()) {
+        //         UserModel user = userOptional.get();
+        //         var email = user.getEmail();
+
+        //          this.sesEmailSender.sendEmail(email, "Tarefa Perto do Fim"
+        //         ,"Sua tarefa esta há menos de 24 horas de acabar");
+        //     }
+        // }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);     
     }
     

@@ -24,7 +24,7 @@ public class TaskModel {
     private String title; 
     private String priority; 
     private LocalDateTime startAt;
-    private LocalDateTime endAt;  
+    private LocalDateTime endAt;   
     private UUID idUser; 
 
     public void setTitle(String title) throws Exception{
