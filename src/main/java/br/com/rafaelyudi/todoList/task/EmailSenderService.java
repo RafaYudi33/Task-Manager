@@ -27,7 +27,7 @@ public class EmailSenderService {
     private IUserRepository userRepository;
 
 
-    @Scheduled(initialDelay = 100000, fixedRate = 5000)
+    @Scheduled(cron = "0 0 18 * * ?")
     public void taskEmailSenderService(){
         var tasks = this.taskService.findTasksCloseEnd();
         
