@@ -1,15 +1,13 @@
 package br.com.rafaelyudi.todoList.EmailSender;
 
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amazonaws.Response;
+
 
 import br.com.rafaelyudi.todoList.Errors.EmailServiceException;
 
@@ -21,7 +19,7 @@ public class EmailController {
     private SesEmailSender emailSender;
 
     @PostMapping("")
-    public ResponseEntity sendEmail(@RequestBody EmailRequest request){
+    public ResponseEntity<String> sendEmail(@RequestBody EmailRequest request){
 
         try{
             this.emailSender.sendEmail(request.to(), request.subject(), request.body());
