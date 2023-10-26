@@ -21,8 +21,11 @@ Esta API permite a criação, leitura e atualização de tarefas em uma lista de
 ## Recursos Tarefas
 
 :ballot_box_with_check: Buscar todas as tarefas
+
 :ballot_box_with_check: Alterar uma tarefa de maneira parcial ou completa
+
 :ballot_box_with_check: Listar todas as tarefas de um usuário
+
 :ballot_box_with_check: Cadastrar novas tarefas
 
 | Método HTTP | Endpoint       | Descrição                                 |
