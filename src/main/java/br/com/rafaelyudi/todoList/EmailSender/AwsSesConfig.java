@@ -12,8 +12,8 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 @Configuration
 public class AwsSesConfig {
     
-    String accessKey = "your acces key";
-    String secretKey = "your secret key";
+    String accessKey = "AKIA2FCGGSOA3UFAGKXX"; // coloque suas proprias chaves para testar 
+    String secretKey = "oYnmxJlH+uDPW86CKJ5dyZbPIdPEYN6ha4n6mZaz";
 
     BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 

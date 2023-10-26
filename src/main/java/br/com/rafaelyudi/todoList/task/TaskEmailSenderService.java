@@ -10,7 +10,7 @@ import br.com.rafaelyudi.todoList.User.IUserRepository;
 
 @Component
 @EnableScheduling
-public class EmailSenderService {
+public class TaskEmailSenderService {
     
     @Autowired
     private TaskService taskService; 

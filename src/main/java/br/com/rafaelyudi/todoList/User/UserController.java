@@ -16,21 +16,23 @@ public class UserController {
     @Autowired
     private IUserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/")
-    public ResponseEntity create(@RequestBody UserModel userModel){ //objeto que será passado de parametro vem do body da requisição
+    public ResponseEntity create(@RequestBody UserDTO userData){ //objeto que será passado de parametro vem do body da requisição
         
         //validar se o usuário ja existe 
-        var user = this.userRepository.findByUsername(userModel.getUsername());
+        var user = this.userRepository.findByUsername(userData.username());
         if(user != null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuario já Existe");
         }
 
-        var passwordCript = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray()); 
-        userModel.setPassword(passwordCript);
+        this.userService.passCript(user.getUsername(), user.getPassword());
         
         // se nao existe, realizar a criação
-        var userCreated = this.userRepository.save(userModel); 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated); 
+        //var userCreated = this.userRepository.save(userData); 
+        return ResponseEntity.status(HttpStatus.CREATED).body("criado"); 
     }
 
 }

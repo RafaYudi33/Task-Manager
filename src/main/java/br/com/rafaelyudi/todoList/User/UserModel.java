@@ -29,4 +29,11 @@ public class UserModel {
     @CreationTimestamp
     private LocalDateTime createdAt; 
 
+    UserModel(UserDTO data){
+        this.username = data.username(); 
+        this.name = data.name(); 
+        this.password = data.password(); 
+        this.email = data.email(); 
+    }
+
 }
