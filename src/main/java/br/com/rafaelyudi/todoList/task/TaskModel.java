@@ -10,9 +10,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity(name = "tb_tasks" )
+@NoArgsConstructor
 public class TaskModel {
     
     @Id
@@ -26,6 +28,8 @@ public class TaskModel {
     private LocalDateTime startAt;
     private LocalDateTime endAt;   
     private UUID idUser; 
+    @CreationTimestamp
+    private LocalDateTime createdAt; 
 
     public void setTitle(String title) throws Exception{
         if(title.length()>50){
@@ -34,7 +38,13 @@ public class TaskModel {
         this.title = title; 
     }
 
-    @CreationTimestamp
-    private LocalDateTime createdAt; 
+
+    TaskModel(TaskDTO data){
+        this.description = data.description(); 
+        this.title = data.title(); 
+        this.priority = data.priority(); 
+        this.startAt = data.startAt(); 
+        this.endAt = data.endAt(); 
+    }
 
 }

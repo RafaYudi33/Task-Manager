@@ -40,11 +40,12 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                     String[] credentials = authString.split(":"); 
                     var username = credentials[0];
                     var password = credentials[1];
-                    
                     var userValidation = this.userRepository.findByUsername(username); 
+        
                     //validar usuario
+
                     if(userValidation == null){
-                        request.setAttribute("idUser", "Unauthorized");
+                        request.setAttribute("idUser", "Unauthorizedd");
                         filterChain.doFilter(request, response);
                     //validar a senha 
                     }else{

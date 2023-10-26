@@ -12,18 +12,17 @@ public class UserService {
     private IUserRepository userRepository; 
 
 
-    public void passCript(String username, String password){
-        
-        var user = this.userRepository.findByUsername(username);
-
-        var passwordCript = BCrypt.withDefaults().hashToString(12, password.toCharArray()); 
-        user.setPassword(passwordCript);
+    public String passCript(UserDTO data){
+        //var user = this.userRepository.findByUsername(username);
+        var passwordCript = BCrypt.withDefaults().hashToString(12, data.password().toCharArray()); 
+        return passwordCript; 
     }
 
    public UserModel userCreate (UserDTO data){
         var userCreated = new UserModel(data);
+        var passCript = passCript(data);
+        userCreated.setPassword(passCript);
         userSave(userCreated);
-        passCript(userCreated.getUsername(), userCreated.getPassword());
         return userCreated; 
    }
 
