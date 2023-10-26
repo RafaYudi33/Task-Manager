@@ -26,13 +26,11 @@ public class UserController {
         var user = this.userRepository.findByUsername(userData.username());
         if(user != null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuario já Existe");
+        }else{
+            // se nao existe, realizar a criação
+            var userCreated = this.userService.userCreate(userData);  
+            return ResponseEntity.status(HttpStatus.CREATED).body(userCreated); 
         }
-
-        this.userService.passCript(user.getUsername(), user.getPassword());
-        
-        // se nao existe, realizar a criação
-        //var userCreated = this.userRepository.save(userData); 
-        return ResponseEntity.status(HttpStatus.CREATED).body("criado"); 
     }
 
 }

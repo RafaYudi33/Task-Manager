@@ -36,4 +36,8 @@ public class UserModel {
         this.email = data.email(); 
     }
 
+    public Object orElse(String string) {
+        return null;
+    }
+
 }

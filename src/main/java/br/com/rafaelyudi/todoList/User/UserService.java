@@ -12,7 +12,7 @@ public class UserService {
     private IUserRepository userRepository; 
 
 
-    protected void passCript(String username, String password){
+    public void passCript(String username, String password){
         
         var user = this.userRepository.findByUsername(username);
 
@@ -20,5 +20,15 @@ public class UserService {
         user.setPassword(passwordCript);
     }
 
+   public UserModel userCreate (UserDTO data){
+        var userCreated = new UserModel(data);
+        userSave(userCreated);
+        passCript(userCreated.getUsername(), userCreated.getPassword());
+        return userCreated; 
+   }
+
+   public void userSave(UserModel user){
+        this.userRepository.save(user); 
+   }
 
 }
