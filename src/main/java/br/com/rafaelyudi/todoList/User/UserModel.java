@@ -10,10 +10,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-//Disponibiliza os Getter e Setter 
+
 @Data 
 @Entity(name = "tb_users")
+@NoArgsConstructor
 public class UserModel {
     
     @Id
@@ -28,5 +30,11 @@ public class UserModel {
     
     @CreationTimestamp
     private LocalDateTime createdAt; 
+
+    UserModel(UserDTO data){
+        this.username = data.username(); 
+        this.name = data.name(); 
+        this.email = data.email(); 
+    }
 
 }
