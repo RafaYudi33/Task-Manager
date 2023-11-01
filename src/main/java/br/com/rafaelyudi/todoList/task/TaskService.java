@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.rafaelyudi.todoList.Errors.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
@@ -24,7 +25,7 @@ public class TaskService {
         return tasks; 
     }
 
-    public boolean verifyAuthorization(String idUser){
+    public boolean verifyExists(String idUser){
         
         if(idUser.equals("Unauthorized")){
             return false; 
@@ -34,8 +35,13 @@ public class TaskService {
     }
 
     public TaskModel createTask(TaskDTO data, HttpServletRequest request){
-        TaskModel task = new TaskModel(data);
+        
         var idUser = request.getAttribute("idUser"); 
+        if(!verifyExists(idUser.toString())){
+            throw new NotFoundException("Não é possivel criar esta tarefa, nome de usuário e/ou senha incorretos"); 
+        }
+        
+        TaskModel task = new TaskModel(data);
         task.setIdUser((UUID)idUser); 
         saveTask(task);
         return task; 

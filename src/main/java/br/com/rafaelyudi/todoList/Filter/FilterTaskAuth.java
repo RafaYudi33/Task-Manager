@@ -45,7 +45,7 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                     //validar usuario
 
                     if(userValidation == null){
-                        request.setAttribute("idUser", "Unauthorizedd");
+                        request.setAttribute("idUser", "Unauthorized");
                         filterChain.doFilter(request, response);
                     //validar a senha 
                     }else{
