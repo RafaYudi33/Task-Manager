@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,15 +28,15 @@ public class TaskService {
         return tasks; 
     }
 
-    boolean dateValidation(TaskDTO data){
+    boolean dateValidation(TaskDTO data) throws InvalidDateException{
 
         LocalDateTime currentDate = LocalDateTime.now(); 
         if(data.startAt().isBefore(currentDate)){
-            return false;  
+            throw new InvalidDateException("A data de início deve ser posterior a data atual");  
         }
 
         if(data.endAt().isBefore(data.startAt())){
-            return false; 
+            throw new InvalidDateException("A data de fim deve ser posterior a data de início"); 
         }
 
         return true;
@@ -60,19 +61,22 @@ public class TaskService {
 
     public TaskModel createTask(TaskDTO data, HttpServletRequest request){
         
-        if(!dateValidation(data)){
+        try{
+            dateValidation(data); 
+            var idUser = request.getAttribute("idUser"); 
             
-        }
-
-        var idUser = request.getAttribute("idUser"); 
-        if(!verifyAuthorization(idUser.toString())){
-            throw new NotFoundException("Não é possivel criar esta tarefa, usuário e/ou senha incorretos"); 
+            if(!verifyAuthorization(idUser.toString())){
+                throw new NotFoundException("Não é possivel criar esta tarefa, usuário e/ou senha incorretos"); 
+            }
+            
+            TaskModel task = new TaskModel(data);
+            task.setIdUser((UUID)idUser); 
+            saveTask(task);
+            return task; 
+        }catch(InvalidDateException e){
+            throw e; 
         }
         
-        TaskModel task = new TaskModel(data);
-        task.setIdUser((UUID)idUser); 
-        saveTask(task);
-        return task; 
     }
 
     public TaskModel updateTask(TaskDTO dataTask, HttpServletRequest request, UUID id){
