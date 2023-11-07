@@ -31,22 +31,6 @@ public class TaskController {
 
     @PostMapping("/")
     public ResponseEntity create(@RequestBody TaskDTO taskDto, HttpServletRequest request){
-        
-        var currentDate = LocalDateTime.now();
-
-        // se a data atual for depois da data de inicio da tarefa
-        // significa que a tarefa foi iniciada antes de ser cadastrada
-        if(taskDto.startAt().isBefore(currentDate)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("A data de inicio da tarefa deve ser posterior à data atual");
-        }
-
-        // se a data de termino for antes que a data de inicio, algo está errado
-        if(taskDto.endAt().isBefore(taskDto.startAt())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de término deve ser posterior a data de inicio");
-        }
-
-
        var taskCreated = this.taskService.createTask(taskDto, request);
        return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);     
     }
