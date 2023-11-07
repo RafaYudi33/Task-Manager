@@ -2,14 +2,12 @@ package br.com.rafaelyudi.todoList.task;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
-import br.com.rafaelyudi.todoList.User.IUserRepository;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -29,6 +27,19 @@ public class TaskService {
         return tasks; 
     }
 
+    boolean dateValidation(TaskDTO data){
+
+        LocalDateTime currentDate = LocalDateTime.now(); 
+        if(data.startAt().isBefore(currentDate)){
+            return false;  
+        }
+
+        if(data.endAt().isBefore(data.startAt())){
+            return false; 
+        }
+
+        return true;
+    }
 
     public boolean verifyAuthorization(Object idUser){
         
@@ -49,6 +60,10 @@ public class TaskService {
 
     public TaskModel createTask(TaskDTO data, HttpServletRequest request){
         
+        if(!dateValidation(data)){
+            
+        }
+
         var idUser = request.getAttribute("idUser"); 
         if(!verifyAuthorization(idUser.toString())){
             throw new NotFoundException("Não é possivel criar esta tarefa, usuário e/ou senha incorretos"); 
