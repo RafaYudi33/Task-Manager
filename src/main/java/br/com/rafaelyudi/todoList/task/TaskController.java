@@ -1,4 +1,4 @@
-package br.com.rafaelyudi.todoList.task;
+package br.com.rafaelyudi.todoList.Task;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController

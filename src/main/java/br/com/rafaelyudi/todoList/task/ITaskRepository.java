@@ -1,4 +1,4 @@
-package br.com.rafaelyudi.todoList.task;
+package br.com.rafaelyudi.todoList.Task;
 
 import java.util.UUID;
 

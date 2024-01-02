@@ -1,4 +1,4 @@
-package br.com.rafaelyudi.todoList.task;
+package br.com.rafaelyudi.todoList.Task;
 
 import br.com.rafaelyudi.todoList.User.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
