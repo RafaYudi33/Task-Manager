@@ -55,21 +55,7 @@ public class TaskController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(HttpServletRequest request, @PathVariable UUID id){
-        var task = this.taskRepository.findById(id).orElse(null); 
-        var idUser = request.getAttribute("idUser"); 
-
-
-        if(task == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tarefa não encontrada"); 
-        }
-
-        if(idUser == "Unauthorized" ||(!idUser.equals(task.getIdUser()))){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não tem permissão para excluir a tarefa"); 
-        }
-
-        
-
-        this.taskRepository.deleteById(id); 
+        this.taskService.deleteTask(id, request);
         return ResponseEntity.status(HttpStatus.OK).body("Tarefa deletada"); 
     }
 
