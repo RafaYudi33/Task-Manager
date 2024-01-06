@@ -17,7 +17,7 @@ public class EmailController {
     
     @Autowired
     private SesEmailSender emailSender;
-
+    
     @PostMapping("")
     public ResponseEntity<String> sendEmail(@RequestBody EmailRequest request){
 

@@ -16,7 +16,7 @@ public class SesEmailSender {
 
     private final AmazonSimpleEmailService amazonSimpleEmailService; 
     
-    @Autowired
+   
     public SesEmailSender(AmazonSimpleEmailService amazonSimpleEmailService){
         this.amazonSimpleEmailService = amazonSimpleEmailService;
     }

@@ -67,6 +67,8 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não tem permissão para excluir a tarefa"); 
         }
 
+        
+
         this.taskRepository.deleteById(id); 
         return ResponseEntity.status(HttpStatus.OK).body("Tarefa deletada"); 
     }
