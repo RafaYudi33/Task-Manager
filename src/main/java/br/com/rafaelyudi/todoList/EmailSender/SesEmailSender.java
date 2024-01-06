@@ -1,5 +1,4 @@
 package br.com.rafaelyudi.todoList.EmailSender;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.AmazonServiceException;
@@ -16,7 +15,7 @@ public class SesEmailSender {
 
     private final AmazonSimpleEmailService amazonSimpleEmailService; 
     
-    @Autowired
+   
     public SesEmailSender(AmazonSimpleEmailService amazonSimpleEmailService){
         this.amazonSimpleEmailService = amazonSimpleEmailService;
     }

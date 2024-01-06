@@ -1,4 +1,4 @@
-package br.com.rafaelyudi.todoList.task;
+package br.com.rafaelyudi.todoList.Task;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,6 +59,7 @@ public class TaskService {
         return true; 
     }
 
+    
     public TaskModel createTask(TaskDTO data, HttpServletRequest request){
         
         try{
@@ -76,8 +77,9 @@ public class TaskService {
         }catch(InvalidDateException e){
             throw e; 
         }
-        
     }
+
+
 
     public TaskModel updateTask(TaskDTO dataTask, HttpServletRequest request, UUID id){
         var task = this.taskRepository.findById(id); 
@@ -98,6 +100,24 @@ public class TaskService {
             }
         }
         throw new NotFoundException("Tarefa não encontrada"); 
+    }
+
+
+
+    public void deleteTask(UUID id, HttpServletRequest request){
+       var task = taskRepository.findById(id);
+       var idUser = request.getAttribute("idUser"); 
+       
+       if(task.isPresent()){
+
+            TaskModel taskModel = task.get();
+            if(!verifyAuthorization(idUser, taskModel.getIdUser())){
+                    throw new NotFoundException("Tarefa não pode ser deletada, usuário e/ou senha incorretos"); 
+            }
+            
+            this.taskRepository.delete(taskModel);
+        }
+       
     }
 
     public void saveTask(TaskModel task){
