@@ -1,6 +1,7 @@
 package br.com.rafaelyudi.todoList.Task;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -108,14 +109,25 @@ public class TaskService {
        if(task.isPresent()){
 
             TaskModel taskModel = task.get();
-            verifyAuthorization(idUser, taskModel.getIdUser());
+            verifyAuthorization(idUser, taskModel.getIdUser()); 
             this.taskRepository.delete(taskModel);
         }
         throw new NotFoundException("Tarefa não encontrada"); 
     }
 
+    public List<TaskModel> getTaskEspecificUser(HttpServletRequest request){
+
+        var idUser = request.getAttribute("idUser"); 
+        verifyAuthorization(idUser);
+        var tasks = taskRepository.findByIdUser((UUID) idUser);
+
+        return tasks;
+
+    }
+
     public void saveTask(TaskModel task){
         this.taskRepository.save(task); 
     }
+    
     
 }
