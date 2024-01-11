@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
+import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -45,7 +46,7 @@ public class TaskService {
     public boolean verifyAuthorization(Object idUser){
         
         if(idUser.equals("Unauthorized")){
-            return false; 
+            throw new UnauthorizedException("Usuário e/ou senha incorretos"); 
         }
         return true;
     }
@@ -53,22 +54,20 @@ public class TaskService {
     public boolean verifyAuthorization(Object idUser, Object idUserFromRepository){
         
         if(!verifyAuthorization(idUser)||!idUser.equals(idUserFromRepository)){
-            return false;
+            throw new UnauthorizedException("Usuário e/ou senha incorretos"); 
         }
         
         return true; 
     }
 
-    
+
     public TaskModel createTask(TaskDTO data, HttpServletRequest request){
         
         try{
             dateValidation(data); 
             var idUser = request.getAttribute("idUser"); 
             
-            if(!verifyAuthorization(idUser.toString())){
-                throw new NotFoundException("Não é possivel criar esta tarefa, usuário e/ou senha incorretos"); 
-            }
+            verifyAuthorization(idUser.toString());
             
             TaskModel task = new TaskModel(data);
             task.setIdUser((UUID)idUser); 
@@ -89,15 +88,13 @@ public class TaskService {
         if(task.isPresent()){
             TaskModel taskUpdate = task.get(); 
 
-            UUID idUserFromRepository = taskUpdate.getIdUser(); 
 
-            if(!verifyAuthorization(idUser, idUserFromRepository)){
-                throw new NotFoundException("Tarefa não pode ser alterada, usuário e/ou senha incorretos");
-            }else{
-                Utils.copyPartialProp(dataTask, taskUpdate);
-                saveTask(taskUpdate);
-                return taskUpdate; 
-            }
+            verifyAuthorization(idUser, taskUpdate.getIdUser());
+                
+            Utils.copyPartialProp(dataTask, taskUpdate);
+            saveTask(taskUpdate);
+            return taskUpdate; 
+            
         }
         throw new NotFoundException("Tarefa não encontrada"); 
     }
@@ -111,13 +108,10 @@ public class TaskService {
        if(task.isPresent()){
 
             TaskModel taskModel = task.get();
-            if(!verifyAuthorization(idUser, taskModel.getIdUser())){
-                    throw new NotFoundException("Tarefa não pode ser deletada, usuário e/ou senha incorretos"); 
-            }
-            
+            verifyAuthorization(idUser, taskModel.getIdUser());
             this.taskRepository.delete(taskModel);
         }
-       
+        throw new NotFoundException("Tarefa não encontrada"); 
     }
 
     public void saveTask(TaskModel task){
