@@ -1,6 +1,6 @@
 package br.com.rafaelyudi.todoList.Task;
 
-import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +29,7 @@ public class TaskController {
     private TaskService taskService; 
 
     @PostMapping("/")
-    public ResponseEntity create(@RequestBody TaskDTO taskDto, HttpServletRequest request){
+    public ResponseEntity<TaskModel> create(@RequestBody TaskDTO taskDto, HttpServletRequest request){
        var taskCreated = this.taskService.createTask(taskDto, request);
        return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);     
     }
@@ -42,13 +42,11 @@ public class TaskController {
 
     @GetMapping("/")
     public List<TaskModel> list(HttpServletRequest request){
-        var idUser = request.getAttribute("idUser"); 
-        var tasks = this.taskRepository.findByIdUser((UUID) idUser); 
-        return tasks;
+        return taskService.getTaskEspecificUser(request);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@RequestBody TaskDTO dataTask, HttpServletRequest request, @PathVariable UUID id){   
+    public ResponseEntity<TaskModel> update(@RequestBody TaskDTO dataTask, HttpServletRequest request, @PathVariable UUID id){   
         var taskUpdated = this.taskService.updateTask(dataTask, request, id);
         return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
     }
