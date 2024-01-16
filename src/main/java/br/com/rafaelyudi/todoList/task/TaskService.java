@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ public class TaskService {
     @Autowired 
     private ITaskRepository taskRepository;
 
+    @Autowired
+    private ModelMapper modelMapper; 
 
     public List<TaskModel> findTasksCloseEnd(){
         LocalDateTime currentDate = LocalDateTime.now(); 
@@ -33,11 +36,11 @@ public class TaskService {
     boolean dateValidation(TaskDTO data) throws InvalidDateException{
 
         LocalDateTime currentDate = LocalDateTime.now(); 
-        if(data.startAt().isBefore(currentDate)){
+        if(data.getStartAt().isBefore(currentDate)){
             throw new InvalidDateException("A data de início deve ser posterior a data atual");  
         }
 
-        if(data.endAt().isBefore(data.startAt())){
+        if(data.getEndAt().isBefore(data.getStartAt())){
             throw new InvalidDateException("A data de fim deve ser posterior a data de início"); 
         }
 
@@ -62,7 +65,7 @@ public class TaskService {
     }
 
 
-    public TaskModel createTask(TaskDTO data, HttpServletRequest request){
+    public TaskDTO createTask(TaskDTO data, HttpServletRequest request){
         
         try{
             dateValidation(data); 
@@ -70,10 +73,10 @@ public class TaskService {
             
             verifyAuthorization(idUser.toString());
             
-            TaskModel task = new TaskModel(data);
+            TaskModel task = modelMapper.map(data, TaskModel.class);
             task.setIdUser((UUID)idUser); 
             saveTask(task);
-            return task; 
+            return modelMapper.map(task, TaskDTO.class);  
         }catch(InvalidDateException e){
             throw e; 
         }
