@@ -67,19 +67,14 @@ public class TaskService {
 
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request){
         
-        try{
             dateValidation(data); 
             var idUser = request.getAttribute("idUser"); 
-            
             verifyAuthorization(idUser.toString());
-            
             TaskModel task = modelMapper.map(data, TaskModel.class);
             task.setIdUser((UUID)idUser); 
             saveTask(task);
             return modelMapper.map(task, TaskDTO.class);  
-        }catch(InvalidDateException e){
-            throw e; 
-        }
+       
     }
 
 
@@ -123,7 +118,7 @@ public class TaskService {
         var idUser = request.getAttribute("idUser"); 
         verifyAuthorization(idUser);
         var tasks = taskRepository.findByIdUser((UUID) idUser);
-
+        
         return tasks;
 
     }
