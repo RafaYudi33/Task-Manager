@@ -39,12 +39,5 @@ public class TaskModel {
     }
 
 
-    TaskModel(TaskDTO data){
-        this.description = data.description(); 
-        this.title = data.title(); 
-        this.priority = data.priority(); 
-        this.startAt = data.startAt(); 
-        this.endAt = data.endAt(); 
-    }
 
 }

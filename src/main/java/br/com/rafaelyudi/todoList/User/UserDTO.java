@@ -1,5 +1,11 @@
 package br.com.rafaelyudi.todoList.User;
 
-public record UserDTO(String username, String name, String password, String email) {
-   
+import lombok.Data;
+
+@Data
+public class UserDTO {
+    String username;
+    String name;
+    String password;
+    String email;
 }

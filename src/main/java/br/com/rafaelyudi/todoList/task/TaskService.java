@@ -1,10 +1,10 @@
 package br.com.rafaelyudi.todoList.Task;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,8 @@ public class TaskService {
     @Autowired 
     private ITaskRepository taskRepository;
 
+    @Autowired
+    private ModelMapper modelMapper; 
 
     public List<TaskModel> findTasksCloseEnd(){
         LocalDateTime currentDate = LocalDateTime.now(); 
@@ -33,11 +35,11 @@ public class TaskService {
     boolean dateValidation(TaskDTO data) throws InvalidDateException{
 
         LocalDateTime currentDate = LocalDateTime.now(); 
-        if(data.startAt().isBefore(currentDate)){
+        if(data.getStartAt().isBefore(currentDate)){
             throw new InvalidDateException("A data de início deve ser posterior a data atual");  
         }
 
-        if(data.endAt().isBefore(data.startAt())){
+        if(data.getEndAt().isBefore(data.getStartAt())){
             throw new InvalidDateException("A data de fim deve ser posterior a data de início"); 
         }
 
@@ -62,29 +64,24 @@ public class TaskService {
     }
 
 
-    public TaskModel createTask(TaskDTO data, HttpServletRequest request){
+    public TaskDTO createTask(TaskDTO data, HttpServletRequest request){
         
-        try{
             dateValidation(data); 
             var idUser = request.getAttribute("idUser"); 
-            
             verifyAuthorization(idUser.toString());
-            
-            TaskModel task = new TaskModel(data);
+            TaskModel task = modelMapper.map(data, TaskModel.class);
             task.setIdUser((UUID)idUser); 
             saveTask(task);
-            return task; 
-        }catch(InvalidDateException e){
-            throw e; 
-        }
+            return modelMapper.map(task, TaskDTO.class);  
+       
     }
 
 
 
-    public TaskModel updateTask(TaskDTO dataTask, HttpServletRequest request, UUID id){
+    public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, UUID id){
         var task = this.taskRepository.findById(id); 
         var idUser = request.getAttribute("idUser"); 
-        
+       
 
         if(task.isPresent()){
             TaskModel taskUpdate = task.get(); 
@@ -94,7 +91,8 @@ public class TaskService {
                 
             Utils.copyPartialProp(dataTask, taskUpdate);
             saveTask(taskUpdate);
-            return taskUpdate; 
+            var taskDTO = modelMapper.map(taskUpdate, TaskDTO.class); 
+            return taskDTO; 
             
         }
         throw new NotFoundException("Tarefa não encontrada"); 
@@ -115,13 +113,19 @@ public class TaskService {
         throw new NotFoundException("Tarefa não encontrada"); 
     }
 
-    public List<TaskModel> getTaskEspecificUser(HttpServletRequest request){
+
+    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request){
 
         var idUser = request.getAttribute("idUser"); 
         verifyAuthorization(idUser);
         var tasks = taskRepository.findByIdUser((UUID) idUser);
-
-        return tasks;
+        List<TaskDTO> tasksDTOs = new ArrayList<>(); 
+        
+        for (TaskModel taskModel : tasks) {
+            tasksDTOs.add(modelMapper.map(taskModel, TaskDTO.class));  
+        }
+        
+        return tasksDTOs;
 
     }
 

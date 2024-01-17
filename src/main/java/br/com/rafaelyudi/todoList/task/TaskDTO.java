@@ -3,6 +3,23 @@ package br.com.rafaelyudi.todoList.Task;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record TaskDTO(String description, String title, String priority, LocalDateTime startAt, LocalDateTime endAt, UUID idUser) {
+
+import lombok.Data;
+
+
+
+@Data
+public class TaskDTO {
+
+    private UUID id; 
+    private String description; 
+    private String title; 
+    private String priority; 
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;   
+    private UUID idUser; 
+    private LocalDateTime createdAt; 
     
-}
+} 
+    
+
