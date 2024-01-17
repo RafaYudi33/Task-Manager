@@ -49,4 +49,6 @@ OBS: Todas as autenticações foram feitas através do Usuário e Senha sendo pa
 Certifique-se de atender aos seguintes requisitos antes de usar a API:
 
 :information_source: Java 17 ou superior
+
+
 :information_source: Maven para gerenciamento de dependências
