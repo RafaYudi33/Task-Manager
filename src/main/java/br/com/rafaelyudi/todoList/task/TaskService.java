@@ -79,9 +79,10 @@ public class TaskService {
 
 
 
-    public TaskModel updateTask(TaskDTO dataTask, HttpServletRequest request, UUID id){
+    public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, UUID id){
         var task = this.taskRepository.findById(id); 
         var idUser = request.getAttribute("idUser"); 
+       
         
 
         if(task.isPresent()){
@@ -92,7 +93,8 @@ public class TaskService {
                 
             Utils.copyPartialProp(dataTask, taskUpdate);
             saveTask(taskUpdate);
-            return taskUpdate; 
+            var taskDTO = modelMapper.map(taskUpdate, TaskDTO.class); 
+            return taskDTO; 
             
         }
         throw new NotFoundException("Tarefa não encontrada"); 
@@ -113,13 +115,18 @@ public class TaskService {
         throw new NotFoundException("Tarefa não encontrada"); 
     }
 
-    public List<TaskModel> getTaskEspecificUser(HttpServletRequest request){
+    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request){
 
         var idUser = request.getAttribute("idUser"); 
         verifyAuthorization(idUser);
         var tasks = taskRepository.findByIdUser((UUID) idUser);
+        List<TaskDTO> tasksDTOs = new ArrayList<>(); 
         
-        return tasks;
+        for (TaskModel taskModel : tasks) {
+            tasksDTOs.add(modelMapper.map(taskModel, TaskDTO.class));  
+        }
+        
+        return tasksDTOs;
 
     }
 

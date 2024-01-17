@@ -41,12 +41,12 @@ public class TaskController {
     }
 
     @GetMapping("/")
-    public List<TaskModel> list(HttpServletRequest request){
+    public List<TaskDTO> list(HttpServletRequest request){
         return taskService.getTaskEspecificUser(request);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskModel> update(@RequestBody TaskDTO dataTask, HttpServletRequest request, @PathVariable UUID id){   
+    public ResponseEntity<TaskDTO> update(@RequestBody TaskDTO dataTask, HttpServletRequest request, @PathVariable UUID id){   
         var taskUpdated = this.taskService.updateTask(dataTask, request, id);
         return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
     }
