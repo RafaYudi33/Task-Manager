@@ -23,7 +23,7 @@ public class UserController {
     public ResponseEntity create(@RequestBody UserDTO userData){ //objeto que será passado de parametro vem do body da requisição
         
         //validar se o usuário ja existe 
-        var user = this.userRepository.findByUsername(userData.username());
+        var user = this.userRepository.findByUsername(userData.getUsername());
         if(user != null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuario já Existe");
         }else{

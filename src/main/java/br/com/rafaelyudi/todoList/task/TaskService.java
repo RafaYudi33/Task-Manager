@@ -1,5 +1,4 @@
 package br.com.rafaelyudi.todoList.Task;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +82,6 @@ public class TaskService {
         var task = this.taskRepository.findById(id); 
         var idUser = request.getAttribute("idUser"); 
        
-        
 
         if(task.isPresent()){
             TaskModel taskUpdate = task.get(); 
@@ -114,6 +112,7 @@ public class TaskService {
         }
         throw new NotFoundException("Tarefa não encontrada"); 
     }
+
 
     public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request){
 
