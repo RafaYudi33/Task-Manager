@@ -4,8 +4,10 @@ package br.com.rafaelyudi.todoList.Task;
 import java.util.List;
 import java.util.UUID;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,37 +23,30 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/tasks")
 public class TaskController {
     
-    @Autowired
-    private ITaskRepository taskRepository; 
-
 
     @Autowired
     private TaskService taskService; 
 
-    @PostMapping("/")
+    @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TaskDTO> create(@RequestBody TaskDTO taskDto, HttpServletRequest request){
        var taskCreated = this.taskService.createTask(taskDto, request);
        return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);     
     }
     
-    @GetMapping("")
-    public List<TaskModel> lisAllTasks(){
-        var tasks = this.taskRepository.findAll(); 
-        return tasks; 
-    }
 
-    @GetMapping("/")
+    @GetMapping(value = "/", produces =  MediaType.APPLICATION_JSON_VALUE)
     public List<TaskDTO> list(HttpServletRequest request){
         return taskService.getTaskEspecificUser(request);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TaskDTO> update(@RequestBody TaskDTO dataTask, HttpServletRequest request, @PathVariable UUID id){   
         var taskUpdated = this.taskService.updateTask(dataTask, request, id);
         return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
     }
     
     @DeleteMapping("/{id}")
+
     public ResponseEntity<String> delete(HttpServletRequest request, @PathVariable UUID id){
         this.taskService.deleteTask(id, request);
         return ResponseEntity.status(HttpStatus.OK).body("Tarefa deletada"); 
