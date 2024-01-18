@@ -2,10 +2,10 @@ package br.com.rafaelyudi.todoList.User;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import br.com.rafaelyudi.todoList.Task.TaskModel;
 
 @Service
 public class UserService {
@@ -35,7 +35,7 @@ public class UserService {
    }
 
 
-   public void userSave(UserModel user){
+   public void userSave(@NonNull UserModel user){
         this.userRepository.save(user); 
    }
 

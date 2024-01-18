@@ -85,10 +85,7 @@ public class TaskService {
 
         if(task.isPresent()){
             TaskModel taskUpdate = task.get(); 
-
-
             verifyAuthorization(idUser, taskUpdate.getIdUser());
-                
             Utils.copyPartialProp(dataTask, taskUpdate);
             saveTask(taskUpdate);
             var taskDTO = modelMapper.map(taskUpdate, TaskDTO.class); 
@@ -130,6 +127,8 @@ public class TaskService {
     }
 
     public void saveTask(TaskModel task){
+
+        
         this.taskRepository.save(task); 
     }
     
