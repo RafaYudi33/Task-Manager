@@ -1,11 +1,15 @@
 package br.com.rafaelyudi.todoList.User;
 
+import java.util.UUID;
+
 import lombok.Data;
 
 @Data
 public class UserDTO {
-    String username;
-    String name;
-    String password;
-    String email;
+
+    private UUID id;
+    private String username;
+    private String name;
+    private String password;
+    private String email;
 }

@@ -1,6 +1,8 @@
 package br.com.rafaelyudi.todoList.Task;
 
 import br.com.rafaelyudi.todoList.User.UserModel;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,11 +26,14 @@ public class TaskEmailSenderService {
 
     @Scheduled(cron = "0 0 18 * * ?")
     public void taskEmailSenderService(){
+        
         var tasks = this.taskService.findTasksCloseEnd();
         
-
-        for(TaskModel task : tasks){
-            var userOptional = this.userRepository.findById(task.getIdUser());
+        
+        for(TaskModel task :  tasks){
+            
+            
+            var userOptional =  this.userRepository.findById(task.getIdUser());
             
             if (userOptional.isPresent()) {
                 UserModel user = userOptional.get();

@@ -25,8 +25,15 @@ public class ExceptionHandlerController {
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-        public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e){
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e){
 
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage()); 
-        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage()); 
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e){
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+    
 }

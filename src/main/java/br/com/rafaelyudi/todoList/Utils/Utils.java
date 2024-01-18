@@ -8,10 +8,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+
+
 public class Utils {
     
-
-    public static String[] getNullPropertyName(Object source) {
+   
+    public static String[] getNullPropertyName( Object source) {
         // Cria um BeanWrapper usando o objeto de origem. Isso permite acessar suas propriedades.
         final BeanWrapper src = new BeanWrapperImpl(source);
     
@@ -39,7 +41,7 @@ public class Utils {
     }
 
     //usa o array de prop nulas do objeto da requisição, e copias todos essas propriedades nulas, do banco pra requisição, para que o update parcial seja feito
-    public static void copyPartialProp(Object source, Object target){
+    public static void copyPartialProp( Object source,  Object target){
         BeanUtils.copyProperties(source, target, getNullPropertyName(source));
     }
 
