@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
@@ -78,7 +79,7 @@ public class TaskService {
 
 
 
-    public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, UUID id){
+    public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, @NonNull UUID id){
         var task = this.taskRepository.findById(id); 
         var idUser = request.getAttribute("idUser"); 
        
@@ -97,7 +98,7 @@ public class TaskService {
 
 
 
-    public void deleteTask(UUID id, HttpServletRequest request){
+    public void deleteTask(@NonNull UUID id, HttpServletRequest request){
        var task = taskRepository.findById(id);
        var idUser = request.getAttribute("idUser"); 
        
@@ -126,7 +127,7 @@ public class TaskService {
 
     }
 
-    public void saveTask(TaskModel task){
+    public void saveTask(@NonNull TaskModel task){
 
         
         this.taskRepository.save(task); 
