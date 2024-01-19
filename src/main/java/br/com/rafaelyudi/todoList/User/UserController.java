@@ -17,7 +17,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/", consumes ={MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+                 produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<UserDTO> create(@RequestBody UserDTO userData) { 
 
         var userCreated = this.userService.userCreate(userData);
