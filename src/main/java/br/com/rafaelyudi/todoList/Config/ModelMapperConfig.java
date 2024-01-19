@@ -1,4 +1,4 @@
-package br.com.rafaelyudi.todoList.Mapper;
+package br.com.rafaelyudi.todoList.Config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
