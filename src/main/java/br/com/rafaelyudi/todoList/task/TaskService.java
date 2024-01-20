@@ -8,10 +8,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
 import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
+import br.com.rafaelyudi.todoList.Mapper.ModelMapperConfig;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -21,9 +23,7 @@ public class TaskService {
     @Autowired 
     private ITaskRepository taskRepository;
 
-    @Autowired
-    private ModelMapper modelMapper; 
-
+    
     public List<TaskModel> findTasksCloseEnd(){
         LocalDateTime currentDate = LocalDateTime.now(); 
         LocalDateTime oneDayForEnd = currentDate.plusDays(1);
@@ -70,10 +70,10 @@ public class TaskService {
         dateValidation(data);
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser.toString());
-        TaskModel task = modelMapper.map(data, TaskModel.class);
+        TaskModel task = ModelMapperConfig.parseObject(data, TaskModel.class); 
         task.setIdUser((UUID) idUser);
         saveTask(task);
-        return modelMapper.map(task, TaskDTO.class);
+        return ModelMapperConfig.parseObject(task, TaskDTO.class);
 
     }
 
@@ -85,7 +85,7 @@ public class TaskService {
         verifyAuthorization(idUser, task.getIdUser());
         Utils.copyPartialProp(dataTask, task);
         saveTask(task);
-        var taskDTO = modelMapper.map(task, TaskDTO.class);
+        var taskDTO = ModelMapperConfig.parseObject(task, TaskDTO.class);
         return taskDTO;
 
     }
@@ -106,14 +106,7 @@ public class TaskService {
         var idUser = request.getAttribute("idUser"); 
         verifyAuthorization(idUser);
         var tasks = taskRepository.findByIdUser((UUID) idUser);
-        List<TaskDTO> tasksDTOs = new ArrayList<>(); 
-        
-        for (TaskModel taskModel : tasks) {
-            tasksDTOs.add(modelMapper.map(taskModel, TaskDTO.class));  
-        }
-        
-        return tasksDTOs;
-
+        return ModelMapperConfig.parseListObject(tasks, TaskDTO.class); 
     }
 
     public void saveTask(@NonNull TaskModel task){
