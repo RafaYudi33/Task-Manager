@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
+import br.com.rafaelyudi.todoList.Mapper.ModelMapperConfig;
 
 @Service
 public class UserService {
@@ -14,8 +15,6 @@ public class UserService {
      @Autowired
      private IUserRepository userRepository;
 
-     @Autowired
-     private ModelMapper modelMapper;
 
      public String passCript(UserDTO data) {
           // var user = this.userRepository.findByUsername(username);
@@ -32,12 +31,11 @@ public class UserService {
           }
 
           var passCript = passCript(data);
-          var userModel = modelMapper.map(data, UserModel.class);
+          var userModel = ModelMapperConfig.parseObject(data, UserModel.class);
           userModel.setPassword(passCript);
           userSave(userModel);
 
-          var userDto = modelMapper.map(userModel, UserDTO.class);
-          return userDto;
+          return ModelMapperConfig.parseObject(userModel, UserDTO.class);
      }
 
      public void userSave(@NonNull UserModel user) {
