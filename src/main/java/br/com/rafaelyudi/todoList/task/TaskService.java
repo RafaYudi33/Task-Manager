@@ -1,10 +1,10 @@
 package br.com.rafaelyudi.todoList.Task;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.UUID;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -19,64 +19,65 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class TaskService {
-    
-    @Autowired 
+
+    @Autowired
     private ITaskRepository taskRepository;
 
-    
-    public List<TaskModel> findTasksCloseEnd(){
-        LocalDateTime currentDate = LocalDateTime.now(); 
+    public List<TaskModel> findTasksCloseEnd() {
+        LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime oneDayForEnd = currentDate.plusDays(1);
 
-        var tasks = this.taskRepository.findByEndAtBetween(currentDate, oneDayForEnd); 
+        var tasks = this.taskRepository.findByEndAtBetween(currentDate, oneDayForEnd);
 
-        return tasks; 
+        return tasks;
     }
 
-    boolean dateValidation(TaskDTO data) throws InvalidDateException{
+    boolean dateValidation(TaskDTO data) throws InvalidDateException {
 
-        LocalDateTime currentDate = LocalDateTime.now(); 
-        if(data.getStartAt().isBefore(currentDate)){
-            throw new InvalidDateException("A data de início deve ser posterior a data atual");  
+        LocalDateTime currentDate = LocalDateTime.now();
+        if (data.getStartAt().isBefore(currentDate)) {
+            throw new InvalidDateException("A data de início deve ser posterior a data atual");
         }
 
-        if(data.getEndAt().isBefore(data.getStartAt())){
-            throw new InvalidDateException("A data de fim deve ser posterior a data de início"); 
+        if (data.getEndAt().isBefore(data.getStartAt())) {
+            throw new InvalidDateException("A data de fim deve ser posterior a data de início");
         }
 
         return true;
     }
 
-    public boolean verifyAuthorization(Object idUser){
-        
-        if(idUser.equals("Unauthorized")){
-            throw new UnauthorizedException("Usuário e/ou senha incorretos"); 
+    public boolean verifyAuthorization(Object idUser) {
+
+        if (idUser.equals("Unauthorized")) {
+            throw new UnauthorizedException("Usuário e/ou senha incorretos");
         }
         return true;
     }
 
-    public boolean verifyAuthorization(Object idUser, Object idUserFromRepository){
-        
-        if(!verifyAuthorization(idUser)||!idUser.equals(idUserFromRepository)){
-            throw new UnauthorizedException("Usuário e/ou senha incorretos"); 
-        }
-        
-        return true; 
-    }
+    public boolean verifyAuthorization(Object idUser, Object idUserFromRepository) {
 
+        if (!verifyAuthorization(idUser) || !idUser.equals(idUserFromRepository)) {
+            throw new UnauthorizedException("Usuário e/ou senha incorretos");
+        }
+
+        return true;
+    }
 
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
 
         dateValidation(data);
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser.toString());
-        TaskModel task = ModelMapperConfig.parseObject(data, TaskModel.class); 
+        TaskModel task = ModelMapperConfig.parseObject(data, TaskModel.class);
         task.setIdUser((UUID) idUser);
         saveTask(task);
-        return ModelMapperConfig.parseObject(task, TaskDTO.class);
+        var taskDto = ModelMapperConfig.parseObject(task, TaskDTO.class);
+        taskDto.add(linkTo(methodOn(TaskController.class).findTaskById(taskDto.getKey(), request)).withSelfRel()
+                .withType("GET"));
+
+        return taskDto;
 
     }
-
 
     public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, @NonNull UUID id) {
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
@@ -86,32 +87,61 @@ public class TaskService {
         Utils.copyPartialProp(dataTask, task);
         saveTask(task);
         var taskDTO = ModelMapperConfig.parseObject(task, TaskDTO.class);
+
+        taskDTO.add(linkTo(methodOn(TaskController.class).findTaskById(id, request)).withSelfRel().withType("GET"));
+
         return taskDTO;
 
     }
 
+    public TaskDTO findTaskById(UUID id, HttpServletRequest request) {
+
+        var idUser = request.getAttribute("idUser");
+        verifyAuthorization(idUser);
+        var taskModel = this.taskRepository.findById(id);
+        var taskDto = ModelMapperConfig.parseObject(taskModel, TaskDTO.class);
+
+        /* HATEOAS */
+        taskDto.add(linkTo(methodOn(TaskController.class).getTaskEspecificUser(request))
+                .withRel("Listar todas as tarefas do mesmo usuário").withType("GET"));
+        taskDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar outra tarefa")
+                .withType("POST"));
+        taskDto.add(linkTo(methodOn(TaskController.class).delete(null, id)).withRel("Deletar esta tarefa")
+                .withType("DELETE"));
+        taskDto.add(linkTo(methodOn(TaskController.class).update(null, null, id)).withRel("Modificar esta tarefa")
+                .withType("PUT"));
+
+        return taskDto;
+    }
 
     public void deleteTask(@NonNull UUID id, HttpServletRequest request) {
         var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada"));
         var idUser = request.getAttribute("idUser");
 
-        
         verifyAuthorization(idUser, task.getIdUser());
         this.taskRepository.delete(task);
     }
 
+    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request) {
 
-    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request){
-
-        var idUser = request.getAttribute("idUser"); 
+        var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser);
         var tasks = taskRepository.findByIdUser((UUID) idUser);
-        return ModelMapperConfig.parseListObject(tasks, TaskDTO.class); 
+        var tasksDTO = ModelMapperConfig.parseListObject(tasks, TaskDTO.class);
+
+        tasksDTO.stream().forEach(t -> {
+            try {
+                t.add(linkTo(methodOn(TaskController.class).findTaskById(t.getKey(), request)).withSelfRel());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return tasksDTO;
     }
 
-    public void saveTask(@NonNull TaskModel task){
-        this.taskRepository.save(task); 
+    public void saveTask(@NonNull TaskModel task) {
+        this.taskRepository.save(task);
     }
-    
-    
+
 }

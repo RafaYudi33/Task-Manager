@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/tasks")
@@ -34,9 +36,14 @@ public class TaskController {
        return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);     
     }
     
+    @GetMapping(value = "{id}", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<TaskDTO> findTaskById(@PathVariable UUID id, HttpServletRequest request){
+        var task = this.taskService.findTaskById(id, request); 
+        return ResponseEntity.status(HttpStatus.OK).body(task); 
+    }
 
     @GetMapping(value = "/", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<TaskDTO> list(HttpServletRequest request){
+    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request){
         return taskService.getTaskEspecificUser(request);
     }
 
