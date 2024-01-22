@@ -3,15 +3,21 @@ package br.com.rafaelyudi.todoList.Task;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.hateoas.RepresentationModel;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Data;
 
 
 
 @Data
-public class TaskDTO {
+@JsonPropertyOrder({"id", "description", "title", "priority", "startAt", "endAt", "idUser", "createdAt"})
+public class TaskDTO extends RepresentationModel<TaskDTO>{
 
-    private UUID id; 
+    @JsonProperty("id")
+    private UUID key; 
     private String description; 
     private String title; 
     private String priority; 
