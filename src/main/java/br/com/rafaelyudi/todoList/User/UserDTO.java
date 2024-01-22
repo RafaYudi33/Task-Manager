@@ -2,6 +2,9 @@ package br.com.rafaelyudi.todoList.User;
 
 import java.util.UUID;
 
+import org.springframework.hateoas.RepresentationModel;
+
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -9,7 +12,7 @@ import lombok.Data;
 
 @Data
 @JsonPropertyOrder({"id", "username", "name", "password", "email"})
-public class UserDTO {
+public class UserDTO extends RepresentationModel<UserDTO>{
 
     @JsonProperty("id")
     private UUID key;
