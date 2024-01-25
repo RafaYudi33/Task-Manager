@@ -10,7 +10,7 @@ import br.com.rafaelyudi.todoList.Task.TaskModel;
 import br.com.rafaelyudi.todoList.User.UserDTO;
 import br.com.rafaelyudi.todoList.User.UserModel;
 
-public class ModelMapperConfig {
+public class ModelMapperConverter {
     
     private static ModelMapper mapper = new ModelMapper(); 
 

@@ -12,7 +12,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
-import br.com.rafaelyudi.todoList.Mapper.ModelMapperConfig;
+import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Task.TaskController;
 
 @Service
@@ -37,11 +37,11 @@ public class UserService {
           }
 
           var passCript = passCript(data);
-          var userModel = ModelMapperConfig.parseObject(data, UserModel.class);
+          var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
           userModel.setPassword(passCript);
           userSave(userModel);
 
-          var userDto = ModelMapperConfig.parseObject(userModel, UserDTO.class);
+          var userDto = ModelMapperConverter.parseObject(userModel, UserDTO.class);
           userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar uma tarefa"));
 
           return userDto;
