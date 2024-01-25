@@ -1,5 +1,6 @@
 package br.com.rafaelyudi.todoList.User;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 @Data
-@JsonPropertyOrder({"id", "username", "name", "password", "email"})
+@JsonPropertyOrder({"id", "username", "name", "password", "email", "createdAt"})
 public class UserDTO extends RepresentationModel<UserDTO>{
 
     @JsonProperty("id")
@@ -20,4 +21,5 @@ public class UserDTO extends RepresentationModel<UserDTO>{
     private String name;
     private String password;
     private String email;
+    private LocalDateTime createdAt;
 }
