@@ -11,17 +11,19 @@ public class MockUser {
     public UserModel mockUserModel(int number){
         UserModel user = new UserModel(); 
         user.setId(UUID.fromString("55392fd7-e418-4b88-b5e0-8924a53964f3"));   
-        user.setName("UserTest" + number);
+        user.setName("NameTest" + number);
+        user.setUsername("UsernameTest" + number);
         user.setEmail("EmailTest" + number);
         user.setPassword("passwordTest" + number);
         user.setCreatedAt(LocalDateTime.of(2024, 01, 30, 10, 00, 00)); 
         return user;
     }
-    
+
     public UserDTO mockUserDto(int number){
         UserDTO user = new UserDTO();
         user.setKey(UUID.fromString("55392fd7-e418-4b88-b5e0-8924a53964f3"));   
-        user.setName("UserTest" + number);
+        user.setName("NameTest" + number);
+        user.setUsername("UsernameTest" + number);
         user.setEmail("EmailTest" + number);
         user.setPassword("passwordTest" + number);
         user.setCreatedAt(LocalDateTime.of(2024, 01, 30, 10, 00, 00)); 
