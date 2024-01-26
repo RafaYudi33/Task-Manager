@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.Base64;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -18,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.User.IUserRepository;
 import br.com.rafaelyudi.todoList.User.UserDTO;
 import br.com.rafaelyudi.todoList.User.UserModel;
@@ -45,23 +47,17 @@ public class UserServiceTest {
     @Mock
     private Utils utils; 
 
-    // @Test
-    // public void testPassCript() {
-    //     UserDTO user = inputObject.mockUserDto(1);
 
-    //     var result = service.passCript(user);
-    //     assertTrue(BCrypt.verifyer().verify(user.getPassword().toCharArray(), result).verified);
-    // }
-        
     @Test
-    public void testCreateUser(){
+    @DisplayName("Should create task when everything is ok.")
+    public void testCreateUserCase1(){
         UserDTO user = inputObject.mockUserDto(1); 
         UserModel entity = inputObject.mockUserModel(1); 
-        UserModel userPersisted = entity;         
+              
 
         when(repository.findByUsername(user.getUsername())).thenReturn(null);
         when(utils.passCript(user)).thenReturn("passwordTest1");
-        when(repository.save(entity)).thenReturn(userPersisted); 
+        when(repository.save(entity)).thenReturn(entity); 
         
 
         var result = service.userCreate(user);
@@ -77,6 +73,22 @@ public class UserServiceTest {
         assertTrue(result.getLinks().toString().contains("</tasks/>;rel=\"Criar uma tarefa\";type=\"POST\""));
     }
 
+    @Test
+    @DisplayName("Should throw Exception when user already exists")
+    public void testCreateUserCase2(){
+        UserDTO user = inputObject.mockUserDto(1); 
+        UserModel entity = inputObject.mockUserModel(1);
 
+        when(repository.findByUsername(user.getUsername())).thenReturn(entity);
+
+        Exception e = assertThrows(UserAlreadyExistsException.class, () ->{
+            service.userCreate(user);
+        }); 
+
+        String expectedMessage = "Esse nome de usuário ja existe!";
+        String actualMessage = e.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 
 }

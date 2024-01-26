@@ -37,9 +37,10 @@ public class UserService {
           var passCript = utils.passCript(data);
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
           userModel.setPassword(passCript);
+          var userPersisted = this.userRepository.save(userModel);
          
 
-          var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);
+          var userDto = ModelMapperConverter.parseObject(userPersisted, UserDTO.class);
           userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar uma tarefa").withType("POST"));
 
           return userDto;
