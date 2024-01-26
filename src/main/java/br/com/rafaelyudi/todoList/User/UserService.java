@@ -14,6 +14,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Task.TaskController;
+import br.com.rafaelyudi.todoList.Utils.Utils;
 
 @Service
 public class UserService {
@@ -21,12 +22,9 @@ public class UserService {
      @Autowired
      private IUserRepository userRepository;
 
-
-     public String passCript(UserDTO data) {
-          // var user = this.userRepository.findByUsername(username);
-          var passwordCript = BCrypt.withDefaults().hashToString(12, data.getPassword().toCharArray());
-          return passwordCript;
-     }
+     @Autowired 
+     private Utils utils; 
+     
 
      public UserDTO userCreate(UserDTO data) {
 
@@ -36,19 +34,16 @@ public class UserService {
                throw new UserAlreadyExistsException("Esse nome de usuário ja existe!");
           }
 
-          var passCript = passCript(data);
+          var passCript = utils.passCript(data);
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
           userModel.setPassword(passCript);
-          userSave(userModel);
+         
 
-          var userDto = ModelMapperConverter.parseObject(userModel, UserDTO.class);
-          userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar uma tarefa"));
+          var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);
+          userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar uma tarefa").withType("POST"));
 
           return userDto;
      }
 
-     public void userSave(@NonNull UserModel user) {
-          this.userRepository.save(user);
-     }
 
 }
