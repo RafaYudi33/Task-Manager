@@ -13,7 +13,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
 import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
-import br.com.rafaelyudi.todoList.Mapper.ModelMapperConfig;
+import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -68,10 +68,10 @@ public class TaskService {
         dateValidation(data);
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser.toString());
-        TaskModel task = ModelMapperConfig.parseObject(data, TaskModel.class);
+        TaskModel task = ModelMapperConverter.parseObject(data, TaskModel.class);
         task.setIdUser((UUID) idUser);
         saveTask(task);
-        var taskDto = ModelMapperConfig.parseObject(task, TaskDTO.class);
+        var taskDto = ModelMapperConverter.parseObject(task, TaskDTO.class);
         taskDto.add(linkTo(methodOn(TaskController.class).findTaskById(taskDto.getKey(), request)).withSelfRel()
                 .withType("GET"));
 
@@ -86,7 +86,7 @@ public class TaskService {
         verifyAuthorization(idUser, task.getIdUser());
         Utils.copyPartialProp(dataTask, task);
         saveTask(task);
-        var taskDTO = ModelMapperConfig.parseObject(task, TaskDTO.class);
+        var taskDTO = ModelMapperConverter.parseObject(task, TaskDTO.class);
 
         taskDTO.add(linkTo(methodOn(TaskController.class).findTaskById(id, request)).withSelfRel().withType("GET"));
 
@@ -99,7 +99,7 @@ public class TaskService {
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser);
         var taskModel = this.taskRepository.findById(id);
-        var taskDto = ModelMapperConfig.parseObject(taskModel, TaskDTO.class);
+        var taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
         taskDto.add(linkTo(methodOn(TaskController.class).getTaskEspecificUser(request))
@@ -127,7 +127,7 @@ public class TaskService {
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser);
         var tasks = taskRepository.findByIdUser((UUID) idUser);
-        var tasksDTO = ModelMapperConfig.parseListObject(tasks, TaskDTO.class);
+        var tasksDTO = ModelMapperConverter.parseListObject(tasks, TaskDTO.class);
 
         tasksDTO.stream().forEach(t -> {
             try {

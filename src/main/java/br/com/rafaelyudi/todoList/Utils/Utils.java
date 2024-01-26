@@ -8,10 +8,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.rafaelyudi.todoList.User.UserDTO;
+
 
 
 public class Utils {
     
+     public String passCript(UserDTO data) {
+          var passwordCript = BCrypt.withDefaults().hashToString(12, data.getPassword().toCharArray());
+          return passwordCript;
+     }
    
     public static String[] getNullPropertyName( Object source) {
         // Cria um BeanWrapper usando o objeto de origem. Isso permite acessar suas propriedades.
@@ -34,14 +41,14 @@ public class Utils {
                 emptyNames.add(pd.getName());
             }
         }
-    
+        
         // Converte o conjunto emptyNames em um array de strings.
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
     }
 
     //usa o array de prop nulas do objeto da requisição, e copias todos essas propriedades nulas, do banco pra requisição, para que o update parcial seja feito
-    public static void copyPartialProp( Object source,  Object target){
+    public static void copyPartialProp(Object source,  Object target){
         BeanUtils.copyProperties(source, target, getNullPropertyName(source));
     }
 
