@@ -8,10 +8,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.rafaelyudi.todoList.User.UserDTO;
+
 
 
 public class Utils {
     
+     public String passCript(UserDTO data) {
+          var passwordCript = BCrypt.withDefaults().hashToString(12, data.getPassword().toCharArray());
+          return passwordCript;
+     }
    
     public static String[] getNullPropertyName( Object source) {
         // Cria um BeanWrapper usando o objeto de origem. Isso permite acessar suas propriedades.
