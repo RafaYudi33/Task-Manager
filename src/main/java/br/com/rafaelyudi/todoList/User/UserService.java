@@ -41,7 +41,7 @@ public class UserService {
          
 
           var userDto = ModelMapperConverter.parseObject(userPersisted, UserDTO.class);
-          userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar uma tarefa").withType("POST"));
+          userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar sua primeira tarefa").withType("POST"));
 
           return userDto;
      }

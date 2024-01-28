@@ -1,10 +1,7 @@
 package br.com.rafaelyudi.todoList.unnitests.services;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
-import java.util.Base64;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +11,9 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.User.IUserRepository;
 import br.com.rafaelyudi.todoList.User.UserDTO;
@@ -70,7 +65,7 @@ public class UserServiceTest {
         assertEquals("passwordTest1", result.getPassword());
         assertEquals(user.getName(), result.getName());
         
-        assertTrue(result.getLinks().toString().contains("</tasks/>;rel=\"Criar uma tarefa\";type=\"POST\""));
+        assertTrue(result.getLinks().toString().contains("</tasks/>;rel=\"Criar sua primeira tarefa\";type=\"POST\""));
     }
 
     @Test
@@ -84,7 +79,7 @@ public class UserServiceTest {
         Exception e = assertThrows(UserAlreadyExistsException.class, () ->{
             service.userCreate(user);
         }); 
-
+        
         String expectedMessage = "Esse nome de usuário ja existe!";
         String actualMessage = e.getMessage();
 

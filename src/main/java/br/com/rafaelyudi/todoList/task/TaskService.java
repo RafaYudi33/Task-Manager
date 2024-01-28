@@ -96,10 +96,10 @@ public class TaskService {
 
     public TaskDTO findTaskById(UUID id, HttpServletRequest request) {
 
+        TaskModel taskModel = this.taskRepository.findById(id).orElseThrow(()-> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser);
-        var taskModel = this.taskRepository.findById(id);
-        var taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
+        TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
         taskDto.add(linkTo(methodOn(TaskController.class).getTaskEspecificUser(request))
