@@ -64,7 +64,7 @@ public class TaskService {
     }
 
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
-
+        
         dateValidation(data);
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser.toString());
