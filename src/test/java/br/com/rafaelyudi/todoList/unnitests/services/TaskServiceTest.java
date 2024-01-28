@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,9 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.lang.NonNull;
 
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
+import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
 import br.com.rafaelyudi.todoList.Task.ITaskRepository;
 import br.com.rafaelyudi.todoList.Task.TaskModel;
 import br.com.rafaelyudi.todoList.Task.TaskService;
@@ -48,6 +47,15 @@ public class TaskServiceTest {
     private ITaskRepository repository;
 
     HttpServletRequest request = mock(HttpServletRequest.class);
+
+
+
+    @Test
+    @DisplayName("")
+    public void testCreateUserCase1(){
+
+    }
+
 
     @Test
     @DisplayName("Should find task by id when everything is ok")
@@ -87,6 +95,25 @@ public class TaskServiceTest {
         String actualMessage = e.getMessage();
         
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Should throw UnauthorizedException when task is not found")
+    public void testFindTaskByIdCase3(){
+        TaskModel entity = inputObject.mockTaskModel(1); 
+
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity)); 
+        when(request.getAttribute("idUser")).thenReturn("Unauthorized"); 
+
+        Exception e = assertThrows(UnauthorizedException.class, () -> {
+            service.findTaskById(entity.getId(), request);
+        });
+
+        String expectedMessage = "Usuário e/ou senha incorretos"; 
+        String actualMessage = e.getMessage(); 
+
+        assertEquals(expectedMessage, actualMessage);
+
     }
 
 }

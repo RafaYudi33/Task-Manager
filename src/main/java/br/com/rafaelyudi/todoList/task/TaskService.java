@@ -76,7 +76,7 @@ public class TaskService {
                 .withType("GET"));
 
         return taskDto;
-
+        
     }
 
     public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, @NonNull UUID id) {
