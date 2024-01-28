@@ -49,7 +49,7 @@ public class TaskService {
     public boolean verifyAuthorization(Object idUser) {
 
         if (idUser.equals("Unauthorized")) {
-            throw new UnauthorizedException("Usuário e/ou senha incorretos");
+            throw new UnauthorizedException();
         }
         return true;
     }
@@ -57,14 +57,14 @@ public class TaskService {
     public boolean verifyAuthorization(Object idUser, Object idUserFromRepository) {
 
         if (!verifyAuthorization(idUser) || !idUser.equals(idUserFromRepository)) {
-            throw new UnauthorizedException("Usuário e/ou senha incorretos");
+            throw new UnauthorizedException();
         }
 
         return true;
     }
 
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
-        
+
         dateValidation(data);
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser.toString());

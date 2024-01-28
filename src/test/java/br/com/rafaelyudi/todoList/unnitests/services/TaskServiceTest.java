@@ -96,7 +96,7 @@ public class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("should throw an exception when the end date is before or equal to the start date")
+    @DisplayName("Should throw an exception when the end date is before or equal to the start date")
     public void testCreateTaskCase3() { 
         TaskDTO task = inputObject.mockTaskDto(1); 
         task.endAt(LocalDateTime.now()); 
@@ -110,6 +110,24 @@ public class TaskServiceTest {
         String actualMessage = e.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    @DisplayName("Should throw Unauthorized Exception when user is unauthorized")
+    public void testCreateTaskCase4(){
+        TaskDTO task = inputObject.mockTaskDto(1); 
+        when(request.getAttribute("idUser")).thenReturn("Unauthorized");
+
+        Exception e = assertThrows(UnauthorizedException.class, ()->{
+            service.createTask(task, request);
+        }) ;
+
+        String expectedMessage = "Usuário e/ou senha incorretos"; 
+        String actualMessage = e.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+
+
     }
 
     @Test
