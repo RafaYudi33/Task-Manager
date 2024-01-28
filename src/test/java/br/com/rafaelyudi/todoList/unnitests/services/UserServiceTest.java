@@ -1,6 +1,8 @@
 package br.com.rafaelyudi.todoList.unnitests.services;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,10 +54,11 @@ public class UserServiceTest {
 
         when(repository.findByUsername(user.getUsername())).thenReturn(null);
         when(utils.passCript(user)).thenReturn("passwordTest1");
-        when(repository.save(entity)).thenReturn(entity); 
+         
         
 
         var result = service.userCreate(user);
+        verify(repository, times(1)).save(entity);
         assertNotNull(result);
         assertNotNull(result.getLinks());
         assertEquals(user.getName(), result.getName());
