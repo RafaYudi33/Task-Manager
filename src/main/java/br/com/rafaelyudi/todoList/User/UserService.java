@@ -34,7 +34,7 @@ public class UserService {
                throw new UserAlreadyExistsException("Esse nome de usuário ja existe!");
           }
 
-          var passCript = utils.passCript(data);
+          var passCript = utils.passCript(data.getPassword());
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
           userModel.setPassword(passCript);
           

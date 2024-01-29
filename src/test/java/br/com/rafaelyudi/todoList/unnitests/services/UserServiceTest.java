@@ -53,7 +53,7 @@ public class UserServiceTest {
               
 
         when(repository.findByUsername(user.getUsername())).thenReturn(null);
-        when(utils.passCript(user)).thenReturn("passwordTest1");
+        when(utils.passCript(user.getPassword())).thenReturn("passwordTest1");
          
         
 

@@ -23,6 +23,9 @@ public class TaskService {
     @Autowired
     private ITaskRepository taskRepository;
 
+    @Autowired
+    private Utils utils;
+
     public List<TaskModel> findTasksCloseEnd() {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime oneDayForEnd = currentDate.plusDays(1);
@@ -84,7 +87,7 @@ public class TaskService {
         var idUser = request.getAttribute("idUser");
 
         verifyAuthorization(idUser, task.getIdUser());
-        Utils.copyPartialProp(dataTask, task);
+        utils.copyPartialProp(dataTask, task);
         saveTask(task);
         var taskDTO = ModelMapperConverter.parseObject(task, TaskDTO.class);
 
