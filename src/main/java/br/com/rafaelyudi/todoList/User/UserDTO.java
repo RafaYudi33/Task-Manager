@@ -84,7 +84,35 @@ public class UserDTO extends RepresentationModel<UserDTO>{
         this.createdAt = createdAt;
     }
 
-  
+    public UserDTO key(UUID key) {
+        setKey(key);
+        return this;
+    }
+
+    public UserDTO username(String username) {
+        setUsername(username);
+        return this;
+    }
+
+    public UserDTO name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public UserDTO password(String password) {
+        setPassword(password);
+        return this;
+    }
+
+    public UserDTO email(String email) {
+        setEmail(email);
+        return this;
+    }
+
+    public UserDTO createdAt(LocalDateTime createdAt) {
+        setCreatedAt(createdAt);
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {

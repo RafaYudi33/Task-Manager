@@ -90,6 +90,35 @@ public class UserModel {
         this.createdAt = createdAt;
     }
 
+    public UserModel id(UUID id) {
+        setId(id);
+        return this;
+    }
+
+    public UserModel username(String username) {
+        setUsername(username);
+        return this;
+    }
+
+    public UserModel name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public UserModel password(String password) {
+        setPassword(password);
+        return this;
+    }
+
+    public UserModel email(String email) {
+        setEmail(email);
+        return this;
+    }
+
+    public UserModel createdAt(LocalDateTime createdAt) {
+        setCreatedAt(createdAt);
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {

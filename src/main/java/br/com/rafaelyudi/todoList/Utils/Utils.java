@@ -7,11 +7,14 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.stereotype.Service;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.rafaelyudi.todoList.Task.TaskDTO;
+import br.com.rafaelyudi.todoList.Task.TaskModel;
 
 
-
+@Service
 public class Utils {
     
      public String passCript(String password) {
@@ -47,8 +50,9 @@ public class Utils {
     }
 
     //usa o array de prop nulas do objeto da requisição, e copias todos essas propriedades nulas, do banco pra requisição, para que o update parcial seja feito
-    public void copyPartialProp(Object source,  Object target){
+    public TaskModel copyPartialProp(TaskDTO source,  TaskModel target){
         BeanUtils.copyProperties(source, target, getNullPropertyName(source));
+        return target; 
     }
 
     // Utils.copyPartialProp(taskModel, task) é usada para atualizar os valores nulos no objeto taskModel com os valores correspondentes do objeto

@@ -54,11 +54,10 @@ public class UserServiceTest {
 
         when(repository.findByUsername(user.getUsername())).thenReturn(null);
         when(utils.passCript(user.getPassword())).thenReturn("passwordTest1");
-         
+        when(repository.save(entity)).thenReturn(entity);  
         
 
         var result = service.userCreate(user);
-        verify(repository, times(1)).save(entity);
         assertNotNull(result);
         assertNotNull(result.getLinks());
         assertEquals(user.getName(), result.getName());

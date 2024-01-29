@@ -38,6 +38,8 @@ public class ModelMapperTest {
         assertEquals(user.getCreatedAt(), output.getCreatedAt());
         assertEquals(user.getEmail(), user.getEmail());
         assertEquals(user.getPassword(), output.getPassword()); 
+
+        System.out.println(output.getKey().toString());
     }
 
 

@@ -89,16 +89,16 @@ public class TaskService {
         
 
         verifyAuthorization(idUser, task.getIdUser());
-        utils.copyPartialProp(dataTask, task);
+        var taskUpdated = utils.copyPartialProp(dataTask, task);
+        var taskDTO = ModelMapperConverter.parseObject(taskUpdated, TaskDTO.class);
+        dateValidation(taskDTO);
         saveTask(task);
-        var taskDTO = ModelMapperConverter.parseObject(task, TaskDTO.class);
 
         taskDTO.add(linkTo(methodOn(TaskController.class).findTaskById(id, request)).withSelfRel().withType("GET"));
 
-        dateValidation(taskDTO);
 
         return taskDTO;
-        
+
     }
 
     public TaskDTO findTaskById(UUID id, HttpServletRequest request) {

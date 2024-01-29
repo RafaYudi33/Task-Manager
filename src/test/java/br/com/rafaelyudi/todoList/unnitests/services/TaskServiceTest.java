@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -100,7 +101,7 @@ public class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw an exception when the end date is before or equal to the start date")
+    @DisplayName("Should throw an InvalidDateException when the end date is before or equal to the start date")
     public void testCreateTaskCase3() { 
         TaskDTO task = inputObject.mockTaskDto(1); 
         task.setEndAt(LocalDateTime.now()); 
@@ -136,39 +137,45 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Should update task when everything is ok")
     public void testUpdateTaskCase1(){
-        TaskDTO taskDTO = new TaskDTO(); 
+        TaskDTO dataWithPropToUpdate = new TaskDTO(); 
+        dataWithPropToUpdate.setDescription("updated");
+        
         TaskModel entity = inputObject.mockTaskModel(1);
-        taskDTO.setDescription("updated");
+        
+        TaskModel taskUpdated = entity;
+        taskUpdated.setDescription("updated");
 
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+        when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(taskUpdated); 
 
-        TaskDTO result = service.updateTask(taskDTO, request, entity.getId()); 
-        result.setDescription("updated");
+        TaskDTO result = service.updateTask(dataWithPropToUpdate, request, entity.getId()); 
 
-        verify(utils,times(1)).copyPartialProp(taskDTO, entity);
         verify(repository,times(1)).save(entity); 
 
         assertNotNull(result);
-        assertEquals("updated", result.getDescription());
-        assertEquals(result.getKey(), result.getKey());
-        assertEquals(result.getCreatedAt(), result.getCreatedAt());
-        assertEquals(result.getEndAt(), result.getEndAt());
-        assertEquals(result.getPriority(), result.getPriority());
-        assertEquals(result.getTitle(), result.getTitle());
-        assertEquals(result.getStartAt(), result.getStartAt());
-        assertEquals(result.getIdUser(), result.getIdUser());
+        assertEquals(result.getDescription(), taskUpdated.getDescription());
+        assertEquals(result.getKey(), taskUpdated.getId());
+        assertEquals(result.getCreatedAt(), taskUpdated.getCreatedAt());
+        assertEquals(result.getEndAt(), taskUpdated.getEndAt());
+        assertEquals(result.getPriority(), taskUpdated.getPriority());
+        assertEquals(result.getTitle(), taskUpdated.getTitle());
+        assertEquals(result.getStartAt(), taskUpdated.getStartAt());
+        assertEquals(result.getIdUser(), taskUpdated.getIdUser());
+        assertTrue(result.getLinks().toString().contains("</tasks/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"self\";type=\"GET\""));
+
     }
 
     @Test
     @DisplayName("Should throw NotFoundException when task not found")
     public void testUpdateCase2(){
-        TaskDTO taskDTO = inputObject.mockTaskDto(1); 
+       UUID mockId = UUID.randomUUID(); 
+       
 
-        when(repository.findById(taskDTO.getKey())).thenReturn(Optional.empty()); 
+        when(repository.findById(mockId)).thenReturn(Optional.empty()); 
 
         Exception e = assertThrows(NotFoundException.class, ()->{
-            service.updateTask(taskDTO, request, taskDTO.getKey());
+            service.updateTask(any(), request, mockId);
         });
 
         String expectedMessage = "Tarefa não encontrada!"; 
@@ -181,12 +188,15 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Should throw Unauthorized exception when user dont have permission")
     public void testUpdateCase3(){
-        TaskDTO task = inputObject.mockTaskDto(1); 
+        
+        TaskDTO dataWithPropToUpdate = inputObject.mockTaskDto(1); 
+        TaskModel entity = inputObject.mockTaskModel(1); 
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
         when(request.getAttribute("idUser")).thenReturn("Unauthorized");
 
         Exception e = assertThrows(UnauthorizedException.class, ()->{
-            service.updateTask(task, request, task.getKey());
-        }) ;
+            service.updateTask(dataWithPropToUpdate, request, entity.getId());
+        });
 
         String expectedMessage = "Usuário e/ou senha incorretos"; 
         String actualMessage = e.getMessage();
@@ -198,12 +208,21 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Should throw an InvalidDateException when the start date is before or equal to the current date")
     public void testUpdateTaskCase4() {
-        TaskDTO task = inputObject.mockTaskDto(1);
-        task.setStartAt(LocalDateTime.now());
-        task.setCreatedAt(LocalDateTime.now());
+        TaskModel entity = inputObject.mockTaskModel(1); 
+        TaskDTO dataWithPropToUpdate = new TaskDTO();
+        dataWithPropToUpdate.setStartAt(LocalDateTime.now());
+
+        TaskModel taskUpdated = entity;
+        taskUpdated.setStartAt(dataWithPropToUpdate.getStartAt());
+
+
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity)); 
+        when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+        when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(taskUpdated);
+        
 
         Exception e = assertThrows(InvalidDateException.class, () -> {
-            service.updateTask(task, request, task.getKey());
+            service.updateTask(dataWithPropToUpdate, request, entity.getId());
         });
 
         String expectedMessage = "A data de início deve ser posterior a data atual";
@@ -211,6 +230,33 @@ public class TaskServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    @DisplayName("Should throw an InvalidDateException when the end date is before or equal to the start date")
+    public void testUpdateTaskCase5() {
+        TaskModel entity = inputObject.mockTaskModel(1); 
+        TaskDTO dataWithPropToUpdate = new TaskDTO();
+        dataWithPropToUpdate.setEndAt(LocalDateTime.now());
+
+        TaskModel taskUpdated = entity;
+        taskUpdated.setEndAt(dataWithPropToUpdate.getEndAt());
+
+
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity)); 
+        when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+        when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(taskUpdated);
+        
+
+        Exception e = assertThrows(InvalidDateException.class, () -> {
+            service.updateTask(dataWithPropToUpdate, request, entity.getId());
+        });
+
+        String expectedMessage = "A data de fim deve ser posterior a data de início";
+        String actualMessage = e.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
 
     @Test
