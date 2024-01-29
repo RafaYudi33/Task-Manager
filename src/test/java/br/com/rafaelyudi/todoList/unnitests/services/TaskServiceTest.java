@@ -31,6 +31,7 @@ import br.com.rafaelyudi.todoList.Task.ITaskRepository;
 import br.com.rafaelyudi.todoList.Task.TaskDTO;
 import br.com.rafaelyudi.todoList.Task.TaskModel;
 import br.com.rafaelyudi.todoList.Task.TaskService;
+import br.com.rafaelyudi.todoList.Utils.Utils;
 import br.com.rafaelyudi.todoList.unnitests.mocks.MockTask;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -52,6 +53,9 @@ public class TaskServiceTest {
     @Mock
     private ITaskRepository repository;
 
+    @Mock
+    private Utils utils;
+
     @Test
     @DisplayName("Should create task when everything is ok")
     public void testCreateTaskCase1() {
@@ -61,7 +65,7 @@ public class TaskServiceTest {
 
         when(request.getAttribute("idUser")).thenReturn(mockIdUser);
 
-        var result = service.createTask(taskDTO, request);
+        TaskDTO result = service.createTask(taskDTO, request);
         entity.setIdUser(mockIdUser);
         verify(repository, times(1)).save(entity);
 
@@ -99,8 +103,8 @@ public class TaskServiceTest {
     @DisplayName("Should throw an exception when the end date is before or equal to the start date")
     public void testCreateTaskCase3() { 
         TaskDTO task = inputObject.mockTaskDto(1); 
-        task.endAt(LocalDateTime.now()); 
-        task.startAt(LocalDateTime.now().plusDays(1)); 
+        task.setEndAt(LocalDateTime.now()); 
+        task.setStartAt(LocalDateTime.now().plusDays(1)); 
 
         Exception e = assertThrows(InvalidDateException.class, ()->{
             service.createTask(task, request);
@@ -127,8 +131,87 @@ public class TaskServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
 
+    }
+
+    @Test
+    @DisplayName("Should update task when everything is ok")
+    public void testUpdateTaskCase1(){
+        TaskDTO taskDTO = new TaskDTO(); 
+        TaskModel entity = inputObject.mockTaskModel(1);
+        taskDTO.setDescription("updated");
+
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
+        when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+
+        TaskDTO result = service.updateTask(taskDTO, request, entity.getId()); 
+        result.setDescription("updated");
+
+        verify(utils,times(1)).copyPartialProp(taskDTO, entity);
+        verify(repository,times(1)).save(entity); 
+
+        assertNotNull(result);
+        assertEquals("updated", result.getDescription());
+        assertEquals(result.getKey(), result.getKey());
+        assertEquals(result.getCreatedAt(), result.getCreatedAt());
+        assertEquals(result.getEndAt(), result.getEndAt());
+        assertEquals(result.getPriority(), result.getPriority());
+        assertEquals(result.getTitle(), result.getTitle());
+        assertEquals(result.getStartAt(), result.getStartAt());
+        assertEquals(result.getIdUser(), result.getIdUser());
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException when task not found")
+    public void testUpdateCase2(){
+        TaskDTO taskDTO = inputObject.mockTaskDto(1); 
+
+        when(repository.findById(taskDTO.getKey())).thenReturn(Optional.empty()); 
+
+        Exception e = assertThrows(NotFoundException.class, ()->{
+            service.updateTask(taskDTO, request, taskDTO.getKey());
+        });
+
+        String expectedMessage = "Tarefa não encontrada!"; 
+        String actualMessage = e.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
 
     }
+
+    @Test
+    @DisplayName("Should throw Unauthorized exception when user dont have permission")
+    public void testUpdateCase3(){
+        TaskDTO task = inputObject.mockTaskDto(1); 
+        when(request.getAttribute("idUser")).thenReturn("Unauthorized");
+
+        Exception e = assertThrows(UnauthorizedException.class, ()->{
+            service.updateTask(task, request, task.getKey());
+        }) ;
+
+        String expectedMessage = "Usuário e/ou senha incorretos"; 
+        String actualMessage = e.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+
+    }
+
+    @Test
+    @DisplayName("Should throw an InvalidDateException when the start date is before or equal to the current date")
+    public void testUpdateTaskCase4() {
+        TaskDTO task = inputObject.mockTaskDto(1);
+        task.setStartAt(LocalDateTime.now());
+        task.setCreatedAt(LocalDateTime.now());
+
+        Exception e = assertThrows(InvalidDateException.class, () -> {
+            service.updateTask(task, request, task.getKey());
+        });
+
+        String expectedMessage = "A data de início deve ser posterior a data atual";
+        String actualMessage = e.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 
     @Test
     @DisplayName("Should find task by id when everything is ok")
@@ -168,6 +251,8 @@ public class TaskServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+
 
     @Test
     @DisplayName("Should throw UnauthorizedException when task is not found")

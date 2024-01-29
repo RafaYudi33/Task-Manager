@@ -48,7 +48,7 @@ public class UtilsTest {
     }
 
     @Test 
-    @DisplayName("")
+    @DisplayName("Should copy null properties when everything is ok")
     public void testGetNullPropertyName(){
         TaskDTO task = inputTask.mockTaskDto(1); 
         task.setDescription(null);
@@ -61,9 +61,9 @@ public class UtilsTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Should copy partial properties when everything is ok")
     public void testCopyPartialProperties(){
-        TaskDTO taskWithPropToUpdated = inputTask.mockTaskDto(1);
+        TaskDTO taskWithPropToUpdated = new TaskDTO();
         TaskModel taskWillBeUpdated = inputTask.mockTaskModel(1); 
         taskWithPropToUpdated.setDescription("updated");
 

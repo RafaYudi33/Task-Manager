@@ -86,6 +86,8 @@ public class TaskService {
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
+        
+
         verifyAuthorization(idUser, task.getIdUser());
         utils.copyPartialProp(dataTask, task);
         saveTask(task);
@@ -93,8 +95,10 @@ public class TaskService {
 
         taskDTO.add(linkTo(methodOn(TaskController.class).findTaskById(id, request)).withSelfRel().withType("GET"));
 
-        return taskDTO;
+        dateValidation(taskDTO);
 
+        return taskDTO;
+        
     }
 
     public TaskDTO findTaskById(UUID id, HttpServletRequest request) {
