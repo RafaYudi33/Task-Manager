@@ -11,8 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -308,8 +310,32 @@ public class TaskServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    
+    @Test
+    @DisplayName("Should find tasks to especific user when everything is ok")
+    public void testGetTaskEspecificUserCase1(){
+        UUID mockIdUser = UUID.randomUUID();
+        List<TaskModel> listTaskModel = inputObject.mockListTaskModel(); 
+        
 
+        when(request.getAttribute("idUser")).thenReturn(mockIdUser); 
+        when(repository.findByIdUser(mockIdUser)).thenReturn(listTaskModel); 
+
+        var result = service.getTaskEspecificUser(request); 
+        int counter = 0;
+        for (TaskDTO r : result) {
+            assertEquals(r.getKey(), listTaskModel.get(counter).getId());
+            assertEquals(r.getIdUser(), listTaskModel.get(counter).getIdUser());
+            assertEquals(r.getCreatedAt(), listTaskModel.get(counter).getCreatedAt());
+            assertEquals(r.getDescription(), listTaskModel.get(counter).getDescription());
+            assertEquals(r.getEndAt(), listTaskModel.get(counter).getEndAt());
+            assertEquals(r.getPriority(), listTaskModel.get(counter).getPriority());
+            assertEquals(r.getStartAt(), listTaskModel.get(counter).getStartAt());
+            assertEquals(r.getTitle(), listTaskModel.get(counter).getTitle());
+            assertTrue(r.getLinks().toString().contains("</tasks/"+ r.getKey() +">;rel=\"self\""));
+            counter++;
+        }     
+    }
+ 
     @Test
     @DisplayName("Should find task by id when everything is ok")
     public void testFindTaskByIdCase1() {
@@ -319,6 +345,9 @@ public class TaskServiceTest {
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
 
         var result = service.findTaskById(entity.getId(), request);
+
+
+
         assertNotNull(result);
         assertEquals(result.getTitle(), entity.getTitle());
         assertEquals(result.getDescription(), entity.getDescription());
