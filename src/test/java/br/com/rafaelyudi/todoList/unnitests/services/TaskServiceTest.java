@@ -257,6 +257,23 @@ public class TaskServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    @DisplayName("Should delete task when everything is ok")
+    public void testDeleteTaskCase1(){
+        UUID mockId = UUID.randomUUID();
+        TaskModel entity = inputObject.mockTaskModel(1); 
+        when(repository.findById(mockId)).thenReturn(Optional.of(entity));
+        when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+        
+        service.deleteTask(mockId, request);
+        verify(repository, times(1)).delete(entity);
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException when task not found")
+    public void testDeleteTaskCase2(){
+        
+    }
 
 
     @Test
