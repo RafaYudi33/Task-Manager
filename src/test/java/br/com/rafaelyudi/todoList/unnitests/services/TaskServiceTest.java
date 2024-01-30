@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,8 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,9 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
 import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
@@ -336,6 +332,24 @@ public class TaskServiceTest {
         }     
     }
  
+    @Test
+    @DisplayName("")
+    public void testGetTaskEspecificUserCase2(){ 
+        when(request.getAttribute("idUser")).thenReturn("Unauthorized"); 
+
+        Exception e = assertThrows(UnauthorizedException.class, ()->{
+            service.getTaskEspecificUser(request);
+        });
+
+        String expectedMessage = "Usuário e/ou senha incorretos";
+        String actualMessage = e.getMessage(); 
+
+        assertEquals(expectedMessage, actualMessage);
+        
+    }
+
+    
+
     @Test
     @DisplayName("Should find task by id when everything is ok")
     public void testFindTaskByIdCase1() {
