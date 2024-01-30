@@ -122,7 +122,7 @@ public class TaskService {
     }
 
     public void deleteTask(@NonNull UUID id, HttpServletRequest request) {
-        var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada"));
+        var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
         verifyAuthorization(idUser, task.getIdUser());

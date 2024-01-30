@@ -24,6 +24,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
@@ -260,21 +262,53 @@ public class TaskServiceTest {
     @Test
     @DisplayName("Should delete task when everything is ok")
     public void testDeleteTaskCase1(){
-        UUID mockId = UUID.randomUUID();
+        
+        
+        
         TaskModel entity = inputObject.mockTaskModel(1); 
-        when(repository.findById(mockId)).thenReturn(Optional.of(entity));
+        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
         
-        service.deleteTask(mockId, request);
+        service.deleteTask(entity.getId(), request);
         verify(repository, times(1)).delete(entity);
     }
 
     @Test
     @DisplayName("Should throw NotFoundException when task not found")
     public void testDeleteTaskCase2(){
-        
+        when(repository.findById(any())).thenReturn(Optional.empty());
+
+        Exception e = assertThrows(NotFoundException.class, ()->{
+            service.deleteTask(any(), request);
+        });
+
+        String expectedMessage = "Tarefa não encontrada!";
+        String actualMessage = e.getMessage(); 
+
+        assertEquals(expectedMessage, actualMessage);
+
     }
 
+    @Test
+    @DisplayName("Should throw UnautorizedException when user dont have permission")
+    public void testDeleteTaskCase3(){
+
+        TaskModel entity = inputObject.mockTaskModel(1);
+
+        when(repository.findById(any())).thenReturn(Optional.of(entity));
+        when(request.getAttribute("idUser")).thenReturn("Unauthorized");
+
+        Exception e = assertThrows(UnauthorizedException.class, ()->{
+            service.deleteTask(any(), request);
+        });
+
+        String expectedMessage = "Usuário e/ou senha incorretos";
+        String actualMessage = e.getMessage(); 
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    
 
     @Test
     @DisplayName("Should find task by id when everything is ok")
