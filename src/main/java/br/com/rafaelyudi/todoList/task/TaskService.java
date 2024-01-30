@@ -140,7 +140,7 @@ public class TaskService {
             try {
                 t.add(linkTo(methodOn(TaskController.class).findTaskById(t.getKey(), request)).withSelfRel());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Erro ao adicionar link!");
             }
         });
 
