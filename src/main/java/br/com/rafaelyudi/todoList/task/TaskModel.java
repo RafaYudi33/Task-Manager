@@ -29,6 +29,7 @@ public class TaskModel {
     private LocalDateTime endAt;   
     private UUID idUser; 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt; 
 
 
@@ -111,45 +112,6 @@ public class TaskModel {
         this.createdAt = createdAt;
     }
 
-    public TaskModel id(UUID id) {
-        setId(id);
-        return this;
-    }
-
-    public TaskModel description(String description) {
-        setDescription(description);
-        return this;
-    }
-
-    public TaskModel title(String title) {
-        setTitle(title);
-        return this;
-    }
-
-    public TaskModel priority(String priority) {
-        setPriority(priority);
-        return this;
-    }
-
-    public TaskModel startAt(LocalDateTime startAt) {
-        setStartAt(startAt);
-        return this;
-    }
-
-    public TaskModel endAt(LocalDateTime endAt) {
-        setEndAt(endAt);
-        return this;
-    }
-
-    public TaskModel idUser(UUID idUser) {
-        setIdUser(idUser);
-        return this;
-    }
-
-    public TaskModel createdAt(LocalDateTime createdAt) {
-        setCreatedAt(createdAt);
-        return this;
-    }
 
     @Override
     public boolean equals(Object o) {

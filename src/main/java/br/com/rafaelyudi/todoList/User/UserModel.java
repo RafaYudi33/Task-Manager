@@ -26,6 +26,7 @@ public class UserModel {
     private String email;
     
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt; 
 
 

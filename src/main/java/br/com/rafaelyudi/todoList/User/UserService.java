@@ -34,15 +34,14 @@ public class UserService {
                throw new UserAlreadyExistsException("Esse nome de usuário ja existe!");
           }
 
-          var passCript = utils.passCript(data);
+          var passCript = utils.passCript(data.getPassword());
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
           userModel.setPassword(passCript);
-          var userPersisted = this.userRepository.save(userModel);
-         
-
-          var userDto = ModelMapperConverter.parseObject(userPersisted, UserDTO.class);
-          userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar uma tarefa").withType("POST"));
-
+          
+          
+          var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);
+          userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar sua primeira tarefa").withType("POST"));
+          
           return userDto;
      }
 

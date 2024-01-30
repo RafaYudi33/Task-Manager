@@ -16,9 +16,9 @@ public class MockTask {
         task.setTitle("TitleTest" + number);
         task.setDescription("DescriptionTest" + number);
         task.setPriority("PriorityTest" + number);
-        task.setStartAt(LocalDateTime.now());
-        task.setEndAt(LocalDateTime.now().plusDays(1));
-        task.setCreatedAt(LocalDateTime.now());
+        task.setStartAt(LocalDateTime.of(2090, 1, 1, 1, 0, 0));
+        task.setEndAt(LocalDateTime.of(2090, 2, 2, 2, 0, 0));
+        task.setCreatedAt(LocalDateTime.of(2080, 1, 1, 1, 0, 0));
         task.setIdUser(UUID.fromString("e11cdccd-2087-469a-8521-34d6e67576c7"));
         return task;
     }
@@ -29,9 +29,9 @@ public class MockTask {
         task.setTitle("TitleTest" + number);
         task.setDescription("DescriptionTest" + number);
         task.setPriority("PriorityTest" + number);
-        task.setStartAt(LocalDateTime.now());
-        task.setEndAt(LocalDateTime.now().plusDays(1));
-        task.setCreatedAt(LocalDateTime.now());
+        task.setStartAt(LocalDateTime.of(2090, 1, 1, 1, 0, 0));
+        task.setEndAt(LocalDateTime.of(2090, 2, 2, 2, 0, 0));
+        task.setCreatedAt(LocalDateTime.of(2080, 1, 1, 1, 0, 0));
         task.setIdUser(UUID.fromString("e11cdccd-2087-469a-8521-34d6e67576c7"));
         return task;
     }

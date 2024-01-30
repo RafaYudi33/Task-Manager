@@ -19,7 +19,7 @@ public interface ITaskRepository extends JpaRepository<TaskModel, UUID> {
     
     void deleteById(@NonNull UUID id);
     List<TaskModel> findByEndAtBetween(LocalDateTime currentDate, LocalDateTime plusOneDay); 
-    
-    @NonNull
+
+  
     Optional<TaskModel> findById(@NonNull UUID id);
 }

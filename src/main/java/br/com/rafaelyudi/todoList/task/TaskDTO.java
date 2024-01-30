@@ -41,6 +41,7 @@ public class TaskDTO extends RepresentationModel<TaskDTO>{
         this.createdAt = createdAt;
     }
 
+  
     public UUID getKey() {
         return this.key;
     }
@@ -105,45 +106,7 @@ public class TaskDTO extends RepresentationModel<TaskDTO>{
         this.createdAt = createdAt;
     }
 
-    public TaskDTO key(UUID key) {
-        setKey(key);
-        return this;
-    }
-
-    public TaskDTO description(String description) {
-        setDescription(description);
-        return this;
-    }
-
-    public TaskDTO title(String title) {
-        setTitle(title);
-        return this;
-    }
-
-    public TaskDTO priority(String priority) {
-        setPriority(priority);
-        return this;
-    }
-
-    public TaskDTO startAt(LocalDateTime startAt) {
-        setStartAt(startAt);
-        return this;
-    }
-
-    public TaskDTO endAt(LocalDateTime endAt) {
-        setEndAt(endAt);
-        return this;
-    }
-
-    public TaskDTO idUser(UUID idUser) {
-        setIdUser(idUser);
-        return this;
-    }
-
-    public TaskDTO createdAt(LocalDateTime createdAt) {
-        setCreatedAt(createdAt);
-        return this;
-    }
+ 
 
     @Override
     public boolean equals(Object o) {

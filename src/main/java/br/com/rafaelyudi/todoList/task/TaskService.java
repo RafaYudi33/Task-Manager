@@ -23,6 +23,9 @@ public class TaskService {
     @Autowired
     private ITaskRepository taskRepository;
 
+    @Autowired
+    private Utils utils;
+
     public List<TaskModel> findTasksCloseEnd() {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime oneDayForEnd = currentDate.plusDays(1);
@@ -49,7 +52,7 @@ public class TaskService {
     public boolean verifyAuthorization(Object idUser) {
 
         if (idUser.equals("Unauthorized")) {
-            throw new UnauthorizedException("Usuário e/ou senha incorretos");
+            throw new UnauthorizedException();
         }
         return true;
     }
@@ -57,7 +60,7 @@ public class TaskService {
     public boolean verifyAuthorization(Object idUser, Object idUserFromRepository) {
 
         if (!verifyAuthorization(idUser) || !idUser.equals(idUserFromRepository)) {
-            throw new UnauthorizedException("Usuário e/ou senha incorretos");
+            throw new UnauthorizedException();
         }
 
         return true;
@@ -76,19 +79,23 @@ public class TaskService {
                 .withType("GET"));
 
         return taskDto;
-
+        
     }
 
     public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, @NonNull UUID id) {
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
+        
+
         verifyAuthorization(idUser, task.getIdUser());
-        Utils.copyPartialProp(dataTask, task);
+        var taskUpdated = utils.copyPartialProp(dataTask, task);
+        var taskDTO = ModelMapperConverter.parseObject(taskUpdated, TaskDTO.class);
+        dateValidation(taskDTO);
         saveTask(task);
-        var taskDTO = ModelMapperConverter.parseObject(task, TaskDTO.class);
 
         taskDTO.add(linkTo(methodOn(TaskController.class).findTaskById(id, request)).withSelfRel().withType("GET"));
+
 
         return taskDTO;
 
@@ -96,10 +103,10 @@ public class TaskService {
 
     public TaskDTO findTaskById(UUID id, HttpServletRequest request) {
 
+        TaskModel taskModel = this.taskRepository.findById(id).orElseThrow(()-> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser);
-        var taskModel = this.taskRepository.findById(id);
-        var taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
+        TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
         taskDto.add(linkTo(methodOn(TaskController.class).getTaskEspecificUser(request))
@@ -115,7 +122,7 @@ public class TaskService {
     }
 
     public void deleteTask(@NonNull UUID id, HttpServletRequest request) {
-        var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada"));
+        var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
         verifyAuthorization(idUser, task.getIdUser());
@@ -133,7 +140,7 @@ public class TaskService {
             try {
                 t.add(linkTo(methodOn(TaskController.class).findTaskById(t.getKey(), request)).withSelfRel());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Erro ao adicionar link!");
             }
         });
 
