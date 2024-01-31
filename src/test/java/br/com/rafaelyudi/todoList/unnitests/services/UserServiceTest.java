@@ -19,9 +19,9 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@TestInstance(Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
     MockUser inputObject;
@@ -55,6 +55,11 @@ public class UserServiceTest {
         
 
         var result = service.userCreate(user);
+
+        verify(repository, times(1)).findByUsername(user.getUsername());
+        verify(utils,times(1)).passCript(user.getPassword());
+        verify(repository,times(1)).save(entity);
+
         assertNotNull(result);
         assertNotNull(result.getLinks());
         assertEquals(user.getName(), result.getName());
@@ -80,6 +85,7 @@ public class UserServiceTest {
         String expectedMessage = "Esse nome de usuário ja existe!";
         String actualMessage = e.getMessage();
 
+        verify(repository, times(1)).findByUsername(user.getUsername());
         assertEquals(expectedMessage, actualMessage);
     }
 

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@TestInstance(Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
 public class TaskServiceTest {
     MockTask inputObject;
@@ -63,6 +63,7 @@ public class TaskServiceTest {
         TaskDTO result = service.createTask(taskDTO, request);
         entity.setIdUser(mockIdUser);
         verify(repository, times(1)).save(entity);
+        verify(request, times(1)).getAttribute("idUser");
 
         assertNotNull(result);
         assertEquals(result.getKey(), taskDTO.getKey());
@@ -104,6 +105,7 @@ public class TaskServiceTest {
         String expectedMessage = "A data de fim deve ser posterior a data de início";
         String actualMessage = e.getMessage();
 
+
         assertEquals(expectedMessage, actualMessage);
     }
 
@@ -115,9 +117,11 @@ public class TaskServiceTest {
 
         Exception e = assertThrows(UnauthorizedException.class, ()-> service.createTask(task, request)) ;
 
+
         String expectedMessage = "Usuário e/ou senha incorretos"; 
         String actualMessage = e.getMessage();
 
+        verify(request, times(1)).getAttribute("idUser");
         assertEquals(expectedMessage, actualMessage);
 
     }
@@ -131,7 +135,6 @@ public class TaskServiceTest {
         TaskModel entity = inputObject.mockTaskModel(1);
 
 
-
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
         entity.setDescription("updated");
@@ -140,6 +143,8 @@ public class TaskServiceTest {
         TaskDTO result = service.updateTask(dataWithPropToUpdate, request, entity.getId()); 
 
         verify(repository,times(1)).save(entity); 
+        verify(repository, times(1)).findById(entity.getId());
+        verify(utils, times(1)).copyPartialProp(dataWithPropToUpdate, entity);
 
         assertNotNull(result);
         assertEquals(result.getDescription(), entity.getDescription());
@@ -167,6 +172,7 @@ public class TaskServiceTest {
         String expectedMessage = "Tarefa não encontrada!"; 
         String actualMessage = e.getMessage();
 
+        verify(repository,times(1)).findById(mockId);
         assertEquals(expectedMessage, actualMessage);
 
     }
@@ -185,6 +191,8 @@ public class TaskServiceTest {
         String expectedMessage = "Usuário e/ou senha incorretos"; 
         String actualMessage = e.getMessage();
 
+        verify(repository, times(1)).findById(entity.getId());
+        verify(request, times(1)).getAttribute("idUser");
         assertEquals(expectedMessage, actualMessage);
 
     }
@@ -196,13 +204,11 @@ public class TaskServiceTest {
         TaskDTO dataWithPropToUpdate = new TaskDTO();
         dataWithPropToUpdate.setStartAt(LocalDateTime.now());
 
-        TaskModel taskUpdated = entity;
-        taskUpdated.setStartAt(dataWithPropToUpdate.getStartAt());
-
+        entity.setStartAt(dataWithPropToUpdate.getStartAt());
 
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity)); 
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
-        when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(taskUpdated);
+        when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(entity);
         
 
         Exception e = assertThrows(InvalidDateException.class, () -> service.updateTask(dataWithPropToUpdate, request, entity.getId()));
@@ -210,6 +216,9 @@ public class TaskServiceTest {
         String expectedMessage = "A data de início deve ser posterior a data atual";
         String actualMessage = e.getMessage();
 
+        verify(repository, times(1)).findById(entity.getId());
+        verify(request,times(1)).getAttribute("idUser");
+        verify(utils, times(1)).copyPartialProp(dataWithPropToUpdate,entity);
         assertEquals(expectedMessage, actualMessage);
     }
 
@@ -220,13 +229,12 @@ public class TaskServiceTest {
         TaskDTO dataWithPropToUpdate = new TaskDTO();
         dataWithPropToUpdate.setEndAt(LocalDateTime.now());
 
-        TaskModel taskUpdated = entity;
-        taskUpdated.setEndAt(dataWithPropToUpdate.getEndAt());
+        entity.setEndAt(dataWithPropToUpdate.getEndAt());
 
 
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity)); 
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
-        when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(taskUpdated);
+        when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(entity);
         
 
         Exception e = assertThrows(InvalidDateException.class, () -> service.updateTask(dataWithPropToUpdate, request, entity.getId()));
@@ -234,6 +242,9 @@ public class TaskServiceTest {
         String expectedMessage = "A data de fim deve ser posterior a data de início";
         String actualMessage = e.getMessage();
 
+        verify(repository, times(1)).findById(entity.getId());
+        verify(request,times(1)).getAttribute("idUser");
+        verify(utils, times(1)).copyPartialProp(dataWithPropToUpdate,entity);
         assertEquals(expectedMessage, actualMessage);
     }
 
@@ -248,7 +259,10 @@ public class TaskServiceTest {
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
         
         service.deleteTask(entity.getId(), request);
+        verify(repository, times(1)).findById(entity.getId());
+        verify(request, times(1)).getAttribute("idUser");
         verify(repository, times(1)).delete(entity);
+
     }
 
     @Test
@@ -259,10 +273,10 @@ public class TaskServiceTest {
         Exception e = assertThrows(NotFoundException.class, ()-> service.deleteTask(any(), request));
 
         String expectedMessage = "Tarefa não encontrada!";
-        String actualMessage = e.getMessage(); 
+        String actualMessage = e.getMessage();
 
+        verify(repository, times(1)).findById(any());
         assertEquals(expectedMessage, actualMessage);
-
     }
 
     @Test
@@ -279,6 +293,8 @@ public class TaskServiceTest {
         String expectedMessage = "Usuário e/ou senha incorretos";
         String actualMessage = e.getMessage(); 
 
+        verify(repository,times(1)).findById(any());
+        verify(request, times(1)).getAttribute("idUser");
         assertEquals(expectedMessage, actualMessage);
     }
 
@@ -289,10 +305,10 @@ public class TaskServiceTest {
         List<TaskModel> listTaskModel = inputObject.mockListTaskModel(); 
         
 
-        when(request.getAttribute("idUser")).thenReturn(mockIdUser); 
-        when(repository.findByIdUser(mockIdUser)).thenReturn(listTaskModel); 
+        when(request.getAttribute("idUser")).thenReturn(mockIdUser);
+        when(repository.findByIdUser(mockIdUser)).thenReturn(listTaskModel);
 
-        var result = service.getTaskEspecificUser(request); 
+        var result = service.getTaskEspecificUser(request);
         int counter = 0;
         for (TaskDTO r : result) {
             assertEquals(r.getKey(), listTaskModel.get(counter).getId());
@@ -305,7 +321,10 @@ public class TaskServiceTest {
             assertEquals(r.getTitle(), listTaskModel.get(counter).getTitle());
             assertTrue(r.getLinks().toString().contains("</tasks/"+ r.getKey() +">;rel=\"self\""));
             counter++;
-        }     
+        }
+
+        verify(request,times(1)).getAttribute("idUser");
+        verify(repository,times(1)).findByIdUser(mockIdUser);
     }
  
     @Test
@@ -318,6 +337,7 @@ public class TaskServiceTest {
         String expectedMessage = "Usuário e/ou senha incorretos";
         String actualMessage = e.getMessage(); 
 
+        verify(request,times(1)).getAttribute("idUser");
         assertEquals(expectedMessage, actualMessage);
         
     }
