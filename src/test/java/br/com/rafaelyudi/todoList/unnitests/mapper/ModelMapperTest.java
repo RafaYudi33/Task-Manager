@@ -36,10 +36,9 @@ public class ModelMapperTest {
         assertEquals(user.getName(), output.getName());
         assertEquals(user.getUsername(), output.getUsername());
         assertEquals(user.getCreatedAt(), output.getCreatedAt());
-        assertEquals(user.getEmail(), user.getEmail());
+        assertEquals(user.getEmail(), output.getEmail());
         assertEquals(user.getPassword(), output.getPassword()); 
 
-        System.out.println(output.getKey().toString());
     }
 
 
@@ -53,7 +52,7 @@ public class ModelMapperTest {
         assertEquals(user.getName(), output.getName());
         assertEquals(user.getUsername(), output.getUsername());
         assertEquals(user.getCreatedAt(), output.getCreatedAt());
-        assertEquals(user.getEmail(), user.getEmail());
+        assertEquals(user.getEmail(), output.getEmail());
         assertEquals(user.getPassword(), output.getPassword()); 
     }   
 

@@ -30,12 +30,10 @@ public class TaskService {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime oneDayForEnd = currentDate.plusDays(1);
 
-        var tasks = this.taskRepository.findByEndAtBetween(currentDate, oneDayForEnd);
-
-        return tasks;
+        return this.taskRepository.findByEndAtBetween(currentDate, oneDayForEnd);
     }
 
-    boolean dateValidation(TaskDTO data) throws InvalidDateException {
+    void dateValidation(TaskDTO data) throws InvalidDateException {
 
         LocalDateTime currentDate = LocalDateTime.now();
         if (data.getStartAt().isBefore(currentDate)) {
@@ -46,7 +44,6 @@ public class TaskService {
             throw new InvalidDateException("A data de fim deve ser posterior a data de início");
         }
 
-        return true;
     }
 
     public boolean verifyAuthorization(Object idUser) {
@@ -57,13 +54,12 @@ public class TaskService {
         return true;
     }
 
-    public boolean verifyAuthorization(Object idUser, Object idUserFromRepository) {
+    public void verifyAuthorization(Object idUser, Object idUserFromRepository) {
 
         if (!verifyAuthorization(idUser) || !idUser.equals(idUserFromRepository)) {
             throw new UnauthorizedException();
         }
 
-        return true;
     }
 
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
@@ -136,13 +132,13 @@ public class TaskService {
         var tasks = taskRepository.findByIdUser((UUID) idUser);
         var tasksDTO = ModelMapperConverter.parseListObject(tasks, TaskDTO.class);
 
-        tasksDTO.stream().forEach(t -> {
+        for (TaskDTO t : tasksDTO) {
             try {
                 t.add(linkTo(methodOn(TaskController.class).findTaskById(t.getKey(), request)).withSelfRel());
             } catch (Exception e) {
                 throw new RuntimeException("Erro ao adicionar link!");
             }
-        });
+        }
 
         return tasksDTO;
     }

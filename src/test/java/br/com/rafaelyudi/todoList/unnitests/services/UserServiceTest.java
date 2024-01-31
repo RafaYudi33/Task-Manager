@@ -1,10 +1,12 @@
 package br.com.rafaelyudi.todoList.unnitests.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
+import br.com.rafaelyudi.todoList.User.IUserRepository;
+import br.com.rafaelyudi.todoList.User.UserDTO;
+import br.com.rafaelyudi.todoList.User.UserModel;
+import br.com.rafaelyudi.todoList.User.UserService;
+import br.com.rafaelyudi.todoList.Utils.Utils;
+import br.com.rafaelyudi.todoList.unnitests.mocks.MockUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,15 +18,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
-import br.com.rafaelyudi.todoList.User.IUserRepository;
-import br.com.rafaelyudi.todoList.User.UserDTO;
-import br.com.rafaelyudi.todoList.User.UserModel;
-import br.com.rafaelyudi.todoList.User.UserService;
-import br.com.rafaelyudi.todoList.Utils.Utils;
-import br.com.rafaelyudi.todoList.unnitests.mocks.MockUser;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@TestInstance(Lifecycle.PER_CLASS)
+@TestInstance(Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
     MockUser inputObject;
@@ -58,6 +55,11 @@ public class UserServiceTest {
         
 
         var result = service.userCreate(user);
+
+        verify(repository, times(1)).findByUsername(user.getUsername());
+        verify(utils,times(1)).passCript(user.getPassword());
+        verify(repository,times(1)).save(entity);
+
         assertNotNull(result);
         assertNotNull(result.getLinks());
         assertEquals(user.getName(), result.getName());
@@ -78,13 +80,12 @@ public class UserServiceTest {
 
         when(repository.findByUsername(user.getUsername())).thenReturn(entity);
 
-        Exception e = assertThrows(UserAlreadyExistsException.class, () ->{
-            service.userCreate(user);
-        }); 
+        Exception e = assertThrows(UserAlreadyExistsException.class, () -> service.userCreate(user));
         
         String expectedMessage = "Esse nome de usuário ja existe!";
         String actualMessage = e.getMessage();
 
+        verify(repository, times(1)).findByUsername(user.getUsername());
         assertEquals(expectedMessage, actualMessage);
     }
 
