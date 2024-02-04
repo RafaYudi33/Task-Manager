@@ -1,4 +1,4 @@
-package br.com.rafaelyudi.todoList.Config;
+package br.com.rafaelyudi.todoList.Config.Swagger;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
