@@ -1,7 +1,11 @@
 package br.com.rafaelyudi.todoList.Errors;
 
-public class InvalidDateException extends RuntimeException{
-    
+import java.io.Serializable;
+
+public class InvalidDateException extends RuntimeException implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     public InvalidDateException(String message){
         super(message);
     }

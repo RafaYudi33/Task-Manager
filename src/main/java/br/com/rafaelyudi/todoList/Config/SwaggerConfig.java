@@ -23,6 +23,6 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi customGroupedOpenApi(){
-        return GroupedOpenApi.builder().group("Tasks").pathsToMatch("/**/v1/**").build();
+        return GroupedOpenApi.builder().group("default").pathsToMatch("/**/v1/**").build();
     }
 }
