@@ -1,9 +1,8 @@
 package br.com.rafaelyudi.todoList.Config.Swagger;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-public record taskExampleForSwagger(
+public record TaskExampleRequestBody(
         String description,
         String title,
         String priority,

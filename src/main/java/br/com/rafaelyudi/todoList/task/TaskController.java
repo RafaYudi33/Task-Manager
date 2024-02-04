@@ -1,11 +1,12 @@
 package br.com.rafaelyudi.todoList.Task;
 
 
-import br.com.rafaelyudi.todoList.Config.Swagger.taskExampleForSwagger;
+import br.com.rafaelyudi.todoList.Config.Swagger.TaskExampleRequestBody;
 import br.com.rafaelyudi.todoList.Errors.CustomResponseError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -61,11 +62,16 @@ public class TaskController {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
                     }
+                    ),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }
                     )
             }
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            content = @Content(schema = @Schema(implementation = taskExampleForSwagger.class))
+            content = @Content(schema = @Schema(implementation = TaskExampleRequestBody.class))
     )
     public ResponseEntity<TaskDTO> create(@RequestBody TaskDTO taskDto, HttpServletRequest request) {
 
@@ -115,8 +121,43 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 
+
     @GetMapping(value = "/", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request){
+    @Operation(
+            summary = "Find tasks",
+            description = "Finds all of a user's tasks",
+            tags = "Task",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200", content = {
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class))),
+                            @Content(mediaType = "application/xml", array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class)))
+                    }
+                    ),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }
+                    ),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }
+                    ),
+                    @ApiResponse(description = "Internal error", responseCode = "500", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }
+                    ),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }
+                    )
+
+            }
+
+    )
+    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request){
         return taskService.getTaskEspecificUser(request);
     }
 
