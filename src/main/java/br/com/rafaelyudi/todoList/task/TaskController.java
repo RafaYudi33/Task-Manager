@@ -5,11 +5,19 @@ import java.util.List;
 import java.util.UUID;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,11 +37,31 @@ public class TaskController {
     
 
     @Autowired
-    private TaskService taskService; 
+    private TaskService taskService;
+
+
 
     @PostMapping(value = "/", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-                 produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<TaskDTO> create(@RequestBody TaskDTO taskDto, HttpServletRequest request){
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @Operation(
+            summary = "Create a task",
+            description = "Create a task by passing in JSON or XML",
+            tags = "Task",
+            responses = {
+                    @ApiResponse(
+                            description = "Created",
+                            responseCode = "201",
+                            content = {
+                                    @Content(mediaType = "application/json", schema = @Schema(implementation = TaskDTO.class)),
+                                    @Content(mediaType = "application/xml", schema = @Schema(implementation = TaskDTO.class))
+                            }
+                    ),
+                    @ApiResponse(description = "Invalid date", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Internal error", responseCode = "500", content = @Content)
+            }
+    )
+    public ResponseEntity<TaskDTO> create(@Validated @RequestBody TaskDTO taskDto, HttpServletRequest request){
        var taskCreated = this.taskService.createTask(taskDto, request);
        return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);     
     }
