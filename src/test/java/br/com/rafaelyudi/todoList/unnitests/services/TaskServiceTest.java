@@ -309,7 +309,7 @@ public class TaskServiceTest {
         when(request.getAttribute("idUser")).thenReturn(mockIdUser);
         when(repository.findByIdUser(mockIdUser)).thenReturn(listTaskModel);
 
-        var result = service.getTaskEspecificUser(request);
+        var result = service.getTaskSpecificUser(request);
         int counter = 0;
         for (TaskDTO r : result) {
             assertEquals(r.getKey(), listTaskModel.get(counter).getId());
@@ -333,7 +333,7 @@ public class TaskServiceTest {
     public void testGetTaskEspecificUserCase2(){ 
         when(request.getAttribute("idUser")).thenReturn("Unauthorized"); 
 
-        Exception e = assertThrows(UnauthorizedException.class, ()-> service.getTaskEspecificUser(request));
+        Exception e = assertThrows(UnauthorizedException.class, ()-> service.getTaskSpecificUser(request));
 
         String expectedMessage = "Usuário e/ou senha incorretos";
         String actualMessage = e.getMessage(); 
