@@ -105,13 +105,13 @@ public class TaskService {
         TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
-        taskDto.add(linkTo(methodOn(TaskController.class).getTaskEspecificUser(request))
+        taskDto.add(linkTo(methodOn(TaskController.class).getTaskSpecificUser(request))
                 .withRel("Listar todas as tarefas do mesmo usuário").withType("GET"));
-        taskDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar outra tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).create(taskDto, request)).withRel("Criar outra tarefa")
                 .withType("POST"));
-        taskDto.add(linkTo(methodOn(TaskController.class).delete(null, id)).withRel("Deletar esta tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).delete(request, id)).withRel("Deletar esta tarefa")
                 .withType("DELETE"));
-        taskDto.add(linkTo(methodOn(TaskController.class).update(null, null, id)).withRel("Modificar esta tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).update(taskDto, request, id)).withRel("Modificar esta tarefa")
                 .withType("PUT"));
 
         return taskDto;
@@ -125,7 +125,7 @@ public class TaskService {
         this.taskRepository.delete(task);
     }
 
-    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request) {
+    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request) {
 
         var idUser = request.getAttribute("idUser");
         verifyAuthorization(idUser);
@@ -143,7 +143,7 @@ public class TaskService {
         return tasksDTO;
     }
 
-    public void saveTask(@NonNull TaskModel task) {
+    public void saveTask(TaskModel task) {
         this.taskRepository.save(task);
     }
 

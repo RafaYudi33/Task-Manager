@@ -131,38 +131,75 @@ public class TaskController {
                     @ApiResponse(description = "Success", responseCode = "200", content = {
                             @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class))),
                             @Content(mediaType = "application/xml", array = @ArraySchema(schema = @Schema(implementation = TaskDTO.class)))
-                    }
-                    ),
+                    }),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
-                    }
-                    ),
+                    }),
                     @ApiResponse(description = "NotFound", responseCode = "404", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
-                    }
-                    ),
+                    }),
                     @ApiResponse(description = "Internal error", responseCode = "500", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
-                    }
-                    ),
+                    }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    })
+            }
+    )
+    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request){
+        return taskService.getTaskSpecificUser(request);
+    }
+
+
+    @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}, 
+                produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+
+    @Operation(
+            summary = "Update a task",
+            description = "Update a task by passing changes in JSON or XML",
+            tags = "Task",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = TaskDTO.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = TaskDTO.class)),
+                    }),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Internal error", responseCode = "500", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Invalid date", responseCode = "400", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
                     }
                     )
 
+
             }
 
     )
-    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request){
-        return taskService.getTaskEspecificUser(request);
-    }
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = TaskExampleRequestBody.class)),
+                    @Content(mediaType = "application/xml", schema = @Schema(implementation = TaskExampleRequestBody.class))
 
-    @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}, 
-                produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+            }
+    )
     public ResponseEntity<TaskDTO> update(@RequestBody TaskDTO dataTask, HttpServletRequest request, @PathVariable UUID id){   
         var taskUpdated = this.taskService.updateTask(dataTask, request, id);
         return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
