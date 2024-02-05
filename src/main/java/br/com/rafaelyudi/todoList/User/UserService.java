@@ -1,20 +1,15 @@
 package br.com.rafaelyudi.todoList.User;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
-
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Task.TaskController;
 import br.com.rafaelyudi.todoList.Utils.Utils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class UserService {
@@ -34,9 +29,9 @@ public class UserService {
                throw new UserAlreadyExistsException("Esse nome de usuário ja existe!");
           }
 
-          var passCript = utils.passCript(data.getPassword());
+          var passCrypt = utils.passCript(data.getPassword());
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
-          userModel.setPassword(passCript);
+          userModel.setPassword(passCrypt);
           
           
           var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);

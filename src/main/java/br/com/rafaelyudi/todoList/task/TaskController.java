@@ -206,9 +206,33 @@ public class TaskController {
     }
     
     @DeleteMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @Operation(
+            summary = "Delete a task",
+            tags = "Task",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "204", content = @Content),
+
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Internal error", responseCode = "500", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    })
+            }
+    )
     public ResponseEntity<String> delete(HttpServletRequest request, @PathVariable UUID id){
         this.taskService.deleteTask(id, request);
-        return ResponseEntity.status(HttpStatus.OK).body("Tarefa deletada"); 
+        return ResponseEntity.noContent().build();
     }
 
 }
