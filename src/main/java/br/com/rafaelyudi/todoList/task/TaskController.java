@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,6 +75,7 @@ public class TaskController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(schema = @Schema(implementation = TaskExampleRequestBody.class))
     )
+    @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<TaskDTO> create(@RequestBody TaskDTO taskDto, HttpServletRequest request) {
 
         var taskCreated = this.taskService.createTask(taskDto, request);

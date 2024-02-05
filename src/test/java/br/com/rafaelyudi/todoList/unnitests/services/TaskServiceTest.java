@@ -61,10 +61,12 @@ public class TaskServiceTest {
 
 
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+        when(utils.verifyAuthorization(entity.getIdUser())).thenReturn(true);
 
         TaskDTO result = service.createTask(taskDTO, request);
         verify(repository, times(1)).save(entity);
         verify(request, times(1)).getAttribute("idUser");
+        verify(utils, times(1)).verifyAuthorization(any());
 
         assertNotNull(result);
         assertEquals(result.getKey(), taskDTO.getKey());
@@ -76,7 +78,7 @@ public class TaskServiceTest {
         assertEquals(result.getStartAt(), taskDTO.getStartAt());
         assertEquals(result.getIdUser(), entity.getIdUser());
         assertTrue(result.getLinks().toString()
-                .contains("</tasks/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"self\";type=\"GET\""));
+                .contains("</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"self\";type=\"GET\""));
     }
 
     @Test
@@ -138,6 +140,7 @@ public class TaskServiceTest {
 
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+        when(utils.verifyAuthorization(any(),any())).thenReturn(true);
         entity.setDescription("updated");
         when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(entity);
 
@@ -145,7 +148,9 @@ public class TaskServiceTest {
 
         verify(repository,times(1)).save(entity); 
         verify(repository, times(1)).findById(entity.getId());
+        verify(utils, times(1)).verifyAuthorization(any(),any());
         verify(utils, times(1)).copyPartialProp(dataWithPropToUpdate, entity);
+        verify(request, times(1)).getAttribute("idUser");
 
         assertNotNull(result);
         assertEquals(result.getDescription(), entity.getDescription());
@@ -156,7 +161,7 @@ public class TaskServiceTest {
         assertEquals(result.getTitle(), entity.getTitle());
         assertEquals(result.getStartAt(), entity.getStartAt());
         assertEquals(result.getIdUser(), entity.getIdUser());
-        assertTrue(result.getLinks().toString().contains("</tasks/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"self\";type=\"GET\""));
+        assertTrue(result.getLinks().toString().contains("</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"self\";type=\"GET\""));
 
     }
 
@@ -210,17 +215,20 @@ public class TaskServiceTest {
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity)); 
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
         when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(entity);
+        when(utils.verifyAuthorization(any(), any())).thenReturn(true);
         
 
         Exception e = assertThrows(InvalidDateException.class, () -> service.updateTask(dataWithPropToUpdate, request, entity.getId()));
 
         String expectedMessage = "A data de início deve ser posterior a data atual";
         String actualMessage = e.getMessage();
+        assertEquals(expectedMessage, actualMessage);
 
         verify(repository, times(1)).findById(entity.getId());
         verify(request,times(1)).getAttribute("idUser");
         verify(utils, times(1)).copyPartialProp(dataWithPropToUpdate,entity);
-        assertEquals(expectedMessage, actualMessage);
+        verify(utils, times(1)).verifyAuthorization(any(),any());
+
     }
 
     @Test
@@ -236,17 +244,21 @@ public class TaskServiceTest {
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity)); 
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
         when(utils.copyPartialProp(dataWithPropToUpdate, entity)).thenReturn(entity);
+        when(utils.verifyAuthorization(any(),any())).thenReturn(true);
         
 
         Exception e = assertThrows(InvalidDateException.class, () -> service.updateTask(dataWithPropToUpdate, request, entity.getId()));
 
         String expectedMessage = "A data de fim deve ser posterior a data de início";
         String actualMessage = e.getMessage();
+        assertEquals(expectedMessage, actualMessage);
 
         verify(repository, times(1)).findById(entity.getId());
         verify(request,times(1)).getAttribute("idUser");
         verify(utils, times(1)).copyPartialProp(dataWithPropToUpdate,entity);
-        assertEquals(expectedMessage, actualMessage);
+        verify(utils, times(1)).verifyAuthorization(any(),any());
+
+
     }
 
     @Test
@@ -258,10 +270,12 @@ public class TaskServiceTest {
         TaskModel entity = inputObject.mockTaskModel(1); 
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
+        when(utils.verifyAuthorization(any(),any())).thenReturn(true);
         
         service.deleteTask(entity.getId(), request);
         verify(repository, times(1)).findById(entity.getId());
         verify(request, times(1)).getAttribute("idUser");
+        verify(utils, times(1)).verifyAuthorization(any(),any());
         verify(repository, times(1)).delete(entity);
 
     }
@@ -301,13 +315,14 @@ public class TaskServiceTest {
 
     @Test
     @DisplayName("Should find tasks to especific user when everything is ok")
-    public void testGetTaskEspecificUserCase1(){
+    public void testGetTaskESpecificUserCase1(){
         UUID mockIdUser = UUID.randomUUID();
         List<TaskModel> listTaskModel = inputObject.mockListTaskModel(); 
         
 
         when(request.getAttribute("idUser")).thenReturn(mockIdUser);
         when(repository.findByIdUser(mockIdUser)).thenReturn(listTaskModel);
+        when(utils.verifyAuthorization(any())).thenReturn(true);
 
         var result = service.getTaskSpecificUser(request);
         int counter = 0;
@@ -320,18 +335,20 @@ public class TaskServiceTest {
             assertEquals(r.getPriority(), listTaskModel.get(counter).getPriority());
             assertEquals(r.getStartAt(), listTaskModel.get(counter).getStartAt());
             assertEquals(r.getTitle(), listTaskModel.get(counter).getTitle());
-            assertTrue(r.getLinks().toString().contains("</tasks/"+ r.getKey() +">;rel=\"self\""));
+            assertTrue(r.getLinks().toString().contains("</tasks/v1/"+ r.getKey() +">;rel=\"self\""));
             counter++;
         }
 
         verify(request,times(1)).getAttribute("idUser");
         verify(repository,times(1)).findByIdUser(mockIdUser);
+        verify(utils, times(1)).verifyAuthorization(any());
+
     }
  
     @Test
     @DisplayName("Should throw Unauthorized Exception when user dont have permission")
-    public void testGetTaskEspecificUserCase2(){ 
-        when(request.getAttribute("idUser")).thenReturn("Unauthorized"); 
+    public void testGetTaskSpecificUserCase2(){
+        when(request.getAttribute("idUser")).thenReturn("Unauthorized");
 
         Exception e = assertThrows(UnauthorizedException.class, ()-> service.getTaskSpecificUser(request));
 
@@ -353,6 +370,7 @@ public class TaskServiceTest {
 
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
         when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
+        when(utils.verifyAuthorization(any(),any())).thenReturn(true);
 
         var result = service.findTaskById(entity.getId(), request);
 
@@ -367,8 +385,13 @@ public class TaskServiceTest {
         assertEquals(result.getEndAt(), entity.getEndAt());
         assertEquals(result.getKey(), entity.getId());
         assertEquals(result.getPriority(), entity.getPriority());
+        System.out.println(result.getLinks().toString());
         assertTrue(result.getLinks().toString().contains(
-                "</tasks/>;rel=\"Listar todas as tarefas do mesmo usuário\";type=\"GET\",</tasks/>;rel=\"Criar outra tarefa\";type=\"POST\",</tasks/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Deletar esta tarefa\";type=\"DELETE\",</tasks/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Modificar esta tarefa\";type=\"PUT\""));
+                "</tasks/v1/>;rel=\"Listar todas as tarefas do mesmo usuário\";type=\"GET\",</tasks/v1/>;rel=\"Criar outra tarefa\";type=\"POST\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Deletar esta tarefa\";type=\"DELETE\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Modificar esta tarefa\";type=\"PUT\""));
+
+        verify(request, times(1)).getAttribute("idUser");
+        verify(repository,times(1)).findById(entity.getId());
+        verify(utils, times(1)).verifyAuthorization(any(),any());
     }
 
     @Test
