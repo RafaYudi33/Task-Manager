@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,6 +70,31 @@ public class UserController {
 
 
     @DeleteMapping(value = "{id}")
+    @Operation(
+            summary = "Delete a user",
+            tags = "User",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "204", content = @Content),
+
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Internal error", responseCode = "500", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    })
+            }
+    )
+    @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<?> deleteUser(@PathVariable(value = "id") UUID id, HttpServletRequest request){
         this.userService.delete(id, request);
         return ResponseEntity.noContent().build();
