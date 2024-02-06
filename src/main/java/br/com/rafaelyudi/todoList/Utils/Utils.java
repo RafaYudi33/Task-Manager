@@ -4,7 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Set;
 
-import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -19,8 +19,7 @@ import br.com.rafaelyudi.todoList.Task.TaskModel;
 public class Utils {
     
      public String passCript(String password) {
-          var passwordCript = BCrypt.withDefaults().hashToString(12, password.toCharArray());
-          return passwordCript;
+         return BCrypt.withDefaults().hashToString(12, password.toCharArray());
      }
    
     public String[] getNullPropertyName( Object source) {

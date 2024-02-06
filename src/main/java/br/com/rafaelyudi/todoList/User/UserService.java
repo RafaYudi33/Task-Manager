@@ -1,12 +1,17 @@
 package br.com.rafaelyudi.todoList.User;
 
 
+import br.com.rafaelyudi.todoList.Errors.NotFoundException;
+import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Task.TaskController;
 import br.com.rafaelyudi.todoList.Utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -40,5 +45,10 @@ public class UserService {
           return userDto;
      }
 
-
+     public void delete(UUID id, HttpServletRequest request){
+          var userModel = this.userRepository.findById(id).orElseThrow(()->new NotFoundException("Usuário não encontrado!"));
+          var idUser = request.getAttribute("IdUser");
+          if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
+          this.userRepository.delete(userModel);
+     }
 }

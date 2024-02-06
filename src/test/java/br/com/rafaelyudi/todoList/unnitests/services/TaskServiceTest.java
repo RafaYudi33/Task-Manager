@@ -385,7 +385,6 @@ public class TaskServiceTest {
         assertEquals(result.getEndAt(), entity.getEndAt());
         assertEquals(result.getKey(), entity.getId());
         assertEquals(result.getPriority(), entity.getPriority());
-        System.out.println(result.getLinks().toString());
         assertTrue(result.getLinks().toString().contains(
                 "</tasks/v1/>;rel=\"Listar todas as tarefas do mesmo usuário\";type=\"GET\",</tasks/v1/>;rel=\"Criar outra tarefa\";type=\"POST\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Deletar esta tarefa\";type=\"DELETE\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Modificar esta tarefa\";type=\"PUT\""));
 

@@ -69,7 +69,7 @@ public class UserServiceTest {
         assertEquals("passwordTest1", result.getPassword());
         assertEquals(user.getName(), result.getName());
         
-        assertTrue(result.getLinks().toString().contains("</tasks/>;rel=\"Criar sua primeira tarefa\";type=\"POST\""));
+        assertTrue(result.getLinks().toString().contains("</tasks/v1/>;rel=\"Criar sua primeira tarefa\";type=\"POST\""));
     }
 
     @Test

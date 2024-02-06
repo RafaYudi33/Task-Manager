@@ -46,27 +46,11 @@ public class TaskService {
 
     }
 
-    public boolean verifyAuthorization(Object idUser) {
-
-        if (idUser.equals("Unauthorized")) {
-            throw new UnauthorizedException();
-        }
-        return true;
-    }
-
-    public void verifyAuthorization(Object idUser, Object idUserFromRepository) {
-
-        if (!verifyAuthorization(idUser) || !idUser.equals(idUserFromRepository)) {
-            throw new UnauthorizedException();
-        }
-
-    }
-
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
 
         dateValidation(data);
         var idUser = request.getAttribute("idUser");
-        verifyAuthorization(idUser.toString());
+        if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
         TaskModel task = ModelMapperConverter.parseObject(data, TaskModel.class);
         task.setIdUser((UUID) idUser);
         saveTask(task);
@@ -82,9 +66,9 @@ public class TaskService {
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
-        
 
-        verifyAuthorization(idUser, task.getIdUser());
+
+        if(!utils.verifyAuthorization(idUser, task.getIdUser())) throw new UnauthorizedException();
         var taskUpdated = utils.copyPartialProp(dataTask, task);
         var taskDTO = ModelMapperConverter.parseObject(taskUpdated, TaskDTO.class);
         dateValidation(taskDTO);
@@ -101,7 +85,7 @@ public class TaskService {
 
         TaskModel taskModel = this.taskRepository.findById(id).orElseThrow(()-> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
-        verifyAuthorization(idUser);
+        if(!utils.verifyAuthorization(idUser, taskModel.getIdUser())) throw new UnauthorizedException();
         TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
@@ -121,14 +105,14 @@ public class TaskService {
         var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
-        verifyAuthorization(idUser, task.getIdUser());
+        if(!utils.verifyAuthorization(idUser, task.getIdUser())) throw new UnauthorizedException();
         this.taskRepository.delete(task);
     }
 
     public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request) {
 
         var idUser = request.getAttribute("idUser");
-        verifyAuthorization(idUser);
+        if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
         var tasks = taskRepository.findByIdUser((UUID) idUser);
         var tasksDTO = ModelMapperConverter.parseListObject(tasks, TaskDTO.class);
 
