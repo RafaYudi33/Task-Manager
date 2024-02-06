@@ -115,6 +115,7 @@ public class TaskController {
                     )
             }
     )
+    @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<TaskDTO> findTaskById(
             @Parameter(description = "The id of the task to find") @PathVariable UUID id,
             HttpServletRequest request
@@ -152,6 +153,7 @@ public class TaskController {
                     })
             }
     )
+    @SecurityRequirement(name = "Basic Auth")
     public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request){
         return taskService.getTaskSpecificUser(request);
     }
@@ -188,12 +190,8 @@ public class TaskController {
                     @ApiResponse(description = "Invalid date", responseCode = "400", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
-                    }
-                    )
-
-
+                    })
             }
-
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = {
@@ -202,7 +200,11 @@ public class TaskController {
 
             }
     )
-    public ResponseEntity<TaskDTO> update(@RequestBody TaskDTO dataTask, HttpServletRequest request, @PathVariable UUID id){   
+    @SecurityRequirement(name = "Basic Auth")
+    public ResponseEntity<TaskDTO> update(
+            @RequestBody TaskDTO dataTask, HttpServletRequest request,
+            @Parameter(description = "The id of the task to update") @PathVariable UUID id
+    ){
         var taskUpdated = this.taskService.updateTask(dataTask, request, id);
         return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
     }
@@ -232,7 +234,8 @@ public class TaskController {
                     })
             }
     )
-    public ResponseEntity<String> delete(HttpServletRequest request, @PathVariable UUID id){
+    @SecurityRequirement(name = "Basic Auth")
+    public ResponseEntity<?> delete(HttpServletRequest request, @Parameter(description = "The id of the task to delete") @PathVariable UUID id){
         this.taskService.deleteTask(id, request);
         return ResponseEntity.noContent().build();
     }

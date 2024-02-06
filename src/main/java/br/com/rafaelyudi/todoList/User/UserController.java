@@ -3,6 +3,7 @@ package br.com.rafaelyudi.todoList.User;
 import br.com.rafaelyudi.todoList.Config.Swagger.UserExampleRequestBody;
 import br.com.rafaelyudi.todoList.Errors.CustomResponseError;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -95,7 +96,7 @@ public class UserController {
             }
     )
     @SecurityRequirement(name = "Basic Auth")
-    public ResponseEntity<?> deleteUser(@PathVariable(value = "id") UUID id, HttpServletRequest request){
+    public ResponseEntity<?> deleteUser(@Parameter(description = "The id of the task to delete") @PathVariable(value = "id") UUID id, HttpServletRequest request){
         this.userService.delete(id, request);
         return ResponseEntity.noContent().build();
     }
