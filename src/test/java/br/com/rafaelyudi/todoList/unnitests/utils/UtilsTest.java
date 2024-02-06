@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import br.com.rafaelyudi.todoList.User.UserModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,5 +79,26 @@ public class UtilsTest {
         assertEquals(UUID.fromString("d8321483-b592-49ac-ba3b-46f32bea96ea"), taskWillBeUpdated.getId());
         assertEquals(UUID.fromString("e11cdccd-2087-469a-8521-34d6e67576c7"), taskWillBeUpdated.getIdUser());
         
+    }
+
+    @Test
+    @DisplayName("Should only check the authorization when everything is ok")
+    public void verifyAuthorizationCase1(){
+        UUID mockIdUser = UUID.randomUUID();
+
+        boolean result = utils.verifyAuthorization(mockIdUser);
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("Should check the authorization and also check if the idUser is the same as the idUser of the task")
+    public void verifyAuthorizationCase2(){
+
+        TaskModel entity = inputTask.mockTaskModel(1);
+        UUID mockIdUser = entity.getIdUser();
+
+
+        boolean result = utils.verifyAuthorization(mockIdUser,  entity.getIdUser());
+        assertTrue(result);
     }
 }
