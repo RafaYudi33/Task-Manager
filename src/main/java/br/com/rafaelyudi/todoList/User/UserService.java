@@ -1,20 +1,20 @@
 package br.com.rafaelyudi.todoList.User;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
-
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.rafaelyudi.todoList.Errors.NotFoundException;
+import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Task.TaskController;
 import br.com.rafaelyudi.todoList.Utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class UserService {
@@ -34,9 +34,9 @@ public class UserService {
                throw new UserAlreadyExistsException("Esse nome de usuário ja existe!");
           }
 
-          var passCript = utils.passCript(data.getPassword());
+          var passCrypt = utils.passCript(data.getPassword());
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
-          userModel.setPassword(passCript);
+          userModel.setPassword(passCrypt);
           
           
           var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);
@@ -45,5 +45,10 @@ public class UserService {
           return userDto;
      }
 
-
+     public void delete(UUID id, HttpServletRequest request){
+          var userModel = this.userRepository.findById(id).orElseThrow(()->new NotFoundException("Usuário não encontrado!"));
+          var idUser = request.getAttribute("IdUser");
+          if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
+          this.userRepository.delete(userModel);
+     }
 }

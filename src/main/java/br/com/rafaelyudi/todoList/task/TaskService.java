@@ -46,27 +46,11 @@ public class TaskService {
 
     }
 
-    public boolean verifyAuthorization(Object idUser) {
-
-        if (idUser.equals("Unauthorized")) {
-            throw new UnauthorizedException();
-        }
-        return true;
-    }
-
-    public void verifyAuthorization(Object idUser, Object idUserFromRepository) {
-
-        if (!verifyAuthorization(idUser) || !idUser.equals(idUserFromRepository)) {
-            throw new UnauthorizedException();
-        }
-
-    }
-
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
 
         dateValidation(data);
         var idUser = request.getAttribute("idUser");
-        verifyAuthorization(idUser.toString());
+        if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
         TaskModel task = ModelMapperConverter.parseObject(data, TaskModel.class);
         task.setIdUser((UUID) idUser);
         saveTask(task);
@@ -82,9 +66,9 @@ public class TaskService {
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
-        
 
-        verifyAuthorization(idUser, task.getIdUser());
+
+        if(!utils.verifyAuthorization(idUser, task.getIdUser())) throw new UnauthorizedException();
         var taskUpdated = utils.copyPartialProp(dataTask, task);
         var taskDTO = ModelMapperConverter.parseObject(taskUpdated, TaskDTO.class);
         dateValidation(taskDTO);
@@ -101,17 +85,17 @@ public class TaskService {
 
         TaskModel taskModel = this.taskRepository.findById(id).orElseThrow(()-> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
-        verifyAuthorization(idUser);
+        if(!utils.verifyAuthorization(idUser, taskModel.getIdUser())) throw new UnauthorizedException();
         TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
-        taskDto.add(linkTo(methodOn(TaskController.class).getTaskEspecificUser(request))
+        taskDto.add(linkTo(methodOn(TaskController.class).getTaskSpecificUser(request))
                 .withRel("Listar todas as tarefas do mesmo usuário").withType("GET"));
-        taskDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar outra tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).create(taskDto, request)).withRel("Criar outra tarefa")
                 .withType("POST"));
-        taskDto.add(linkTo(methodOn(TaskController.class).delete(null, id)).withRel("Deletar esta tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).delete(request, id)).withRel("Deletar esta tarefa")
                 .withType("DELETE"));
-        taskDto.add(linkTo(methodOn(TaskController.class).update(null, null, id)).withRel("Modificar esta tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).update(taskDto, request, id)).withRel("Modificar esta tarefa")
                 .withType("PUT"));
 
         return taskDto;
@@ -121,14 +105,14 @@ public class TaskService {
         var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         var idUser = request.getAttribute("idUser");
 
-        verifyAuthorization(idUser, task.getIdUser());
+        if(!utils.verifyAuthorization(idUser, task.getIdUser())) throw new UnauthorizedException();
         this.taskRepository.delete(task);
     }
 
-    public List<TaskDTO> getTaskEspecificUser(HttpServletRequest request) {
+    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request) {
 
         var idUser = request.getAttribute("idUser");
-        verifyAuthorization(idUser);
+        if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
         var tasks = taskRepository.findByIdUser((UUID) idUser);
         var tasksDTO = ModelMapperConverter.parseListObject(tasks, TaskDTO.class);
 
@@ -143,7 +127,7 @@ public class TaskService {
         return tasksDTO;
     }
 
-    public void saveTask(@NonNull TaskModel task) {
+    public void saveTask(TaskModel task) {
         this.taskRepository.save(task);
     }
 

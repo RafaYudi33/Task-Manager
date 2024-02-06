@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Set;
 
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -18,8 +19,7 @@ import br.com.rafaelyudi.todoList.Task.TaskModel;
 public class Utils {
     
      public String passCript(String password) {
-          var passwordCript = BCrypt.withDefaults().hashToString(12, password.toCharArray());
-          return passwordCript;
+         return BCrypt.withDefaults().hashToString(12, password.toCharArray());
      }
    
     public String[] getNullPropertyName( Object source) {
@@ -55,15 +55,23 @@ public class Utils {
         return target; 
     }
 
-    // Utils.copyPartialProp(taskModel, task) é usada para atualizar os valores nulos no objeto taskModel com os valores correspondentes do objeto
-    // task recuperado do banco de dados. Isso é especialmente útil quando você recebe uma requisição que contém apenas os atributos que precisam
-    // ser alterados, e todos os outros atributos do objeto taskModel são nulos.
-    // A função copyPartialProp identifica quais propriedades do taskModel têm valores nulos (ou seja, os atributos que não foram fornecidos na 
-    //requisição) e copia os valores correspondentes do objeto task para o taskModel. Isso garante que você preserve os valores existentes em task 
-    //para as propriedades que não foram fornecidas na requisição.
-    // Assim, somente as propriedades fornecidas na requisição serão atualizadas, enquanto as demais permanecerão inalteradas, com os valores
-    // originais obtidos do objeto task. Esse é um padrão comum em atualizações parciais para garantir que os valores não fornecidos na requisição
-    // não sejam sobrescritos com valores nulos
 
-    
+    public boolean verifyAuthorization(Object idUser) {
+
+
+        if (idUser.toString().equals("Unauthorized")) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean verifyAuthorization(Object idUser, Object idUserFromRepository) {
+
+        if (!verifyAuthorization(idUser) || !idUser.equals(idUserFromRepository)) {
+            return false;
+        }
+        return true;
+    }
+
+
 }
