@@ -55,7 +55,7 @@ public class UtilsTest {
         task.setDescription(null);
         task.setPriority(null);
  
-        String result[] = utils.getNullPropertyName(task); 
+        String[] result = utils.getNullPropertyName(task);
          
         assertArrayEquals(new String[]{"description", "priority"}, result);
 
