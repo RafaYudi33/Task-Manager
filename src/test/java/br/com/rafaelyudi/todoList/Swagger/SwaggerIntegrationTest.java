@@ -25,7 +25,7 @@ public class SwaggerIntegrationTest extends AbstractIntegrationTest {
                 .extract()
                 .body()
                 .asString();
-
+ 
         assertTrue(content.contains("Swagger UI"));
     }
 

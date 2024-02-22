@@ -12,7 +12,7 @@ import br.com.rafaelyudi.todoList.User.UserModel;
 
 public class ModelMapperConverter {
     
-    private static ModelMapper mapper = new ModelMapper(); 
+    private static final ModelMapper mapper = new ModelMapper();
 
     static{
         mapper.createTypeMap(TaskModel.class, TaskDTO.class).addMapping(TaskModel::getId, TaskDTO::setKey);  
