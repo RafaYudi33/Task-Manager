@@ -1,3 +1,6 @@
+# noinspection undefined
+cors:
+  originPatterns: "http://localhost:8080,http://localhost:4200"
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
