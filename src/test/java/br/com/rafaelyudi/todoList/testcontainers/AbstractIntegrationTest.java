@@ -30,8 +30,6 @@ public class AbstractIntegrationTest {
                     "spring.datasource.password", mysql.getPassword());
         }
 
-
-
         @Override
         public void initialize(ConfigurableApplicationContext applicationContext) {
             startContainers();
