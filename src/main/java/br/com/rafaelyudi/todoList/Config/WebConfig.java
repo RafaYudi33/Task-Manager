@@ -18,25 +18,21 @@ public class WebConfig implements WebMvcConfigurer{
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-
         configurer.favorParameter(false)
         .ignoreAcceptHeader(false)
         .useRegisteredExtensionsOnly(false)
         .defaultContentType(MediaType.APPLICATION_JSON)
         .mediaType("json", MediaType.APPLICATION_JSON)
-        .mediaType("xml", MediaType.APPLICATION_XML); 
-        
+        .mediaType("xml", MediaType.APPLICATION_XML);
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         var allowedOrigins = corsMap.split(",");
-        System.out.println(Arrays.toString(allowedOrigins));
         registry
                 .addMapping("/**")
                 .allowedMethods("*")
                 .allowedOrigins(allowedOrigins)
                 .allowCredentials(true);
-
     }
 }

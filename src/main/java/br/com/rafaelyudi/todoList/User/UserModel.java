@@ -9,6 +9,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.Type;
+
 import java.util.Objects;
 
 
@@ -17,7 +19,7 @@ public class UserModel {
     
     @Id
     @GeneratedValue(generator = "UUID")
-    private UUID id; 
+    private UUID id;
 
     @Column(unique = true)
     private String username; 

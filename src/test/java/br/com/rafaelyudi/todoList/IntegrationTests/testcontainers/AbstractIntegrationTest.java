@@ -1,4 +1,4 @@
-package br.com.rafaelyudi.todoList.testcontainers;
+package br.com.rafaelyudi.todoList.IntegrationTests.testcontainers;
 
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @ContextConfiguration(initializers = AbstractIntegrationTest.Initializer.class)
-public class AbstractIntegrationTest {
+public class AbstractIntegrationTest  {
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext>{
 
@@ -38,7 +38,4 @@ public class AbstractIntegrationTest {
             environment.getPropertySources().addFirst(testcontainers);
         }
     }
-
-
-
 }

@@ -1,9 +1,9 @@
-package br.com.rafaelyudi.todoList.Swagger;
+package br.com.rafaelyudi.todoList.IntegrationTests.Swagger;
 
+import br.com.rafaelyudi.todoList.IntegrationTests.testcontainers.AbstractIntegrationTest;
 import br.com.rafaelyudi.todoList.config.TestConfig;
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.rafaelyudi.todoList.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

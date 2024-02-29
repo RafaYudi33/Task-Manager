@@ -70,6 +70,9 @@ public class UserDTO {
         this.createdAt = createdAt;
     }
 
+    public UserDTO() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

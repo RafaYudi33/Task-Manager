@@ -48,5 +48,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
     public final CustomResponseError handleUserAlreadyExistsException(UserAlreadyExistsException e, WebRequest request){
         return new CustomResponseError(e.getMessage(), new Date(), request.getDescription(false));
     }
+
+
     
 }

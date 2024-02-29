@@ -47,7 +47,7 @@ public class UserService {
 
      public void delete(UUID id, HttpServletRequest request){
           var userModel = this.userRepository.findById(id).orElseThrow(()->new NotFoundException("Usuário não encontrado!"));
-          var idUser = request.getAttribute("IdUser");
+          var idUser = request.getAttribute("idUser");
           if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
           this.userRepository.delete(userModel);
      }
