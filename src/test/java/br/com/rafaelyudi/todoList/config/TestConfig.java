@@ -8,4 +8,8 @@ public class TestConfig {
     public static final String ALLOWED_DOMAIN = "http://localhost:4200";
     public static final String NOT_ALLOWED_DOMAIN = "http://randomdomain";
 
+    public static final String MEDIA_TYPE_JSON = "application/json";
+    public static final String MEDIA_TYPE_XML = "application/xml";
+
+
 }
