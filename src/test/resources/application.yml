@@ -1,3 +1,6 @@
+#file: noinspection undefined
+cors:
+  originPatterns: "http://localhosto:8080,http://localhost:4200"
 server:
   port: 8888
 spring:
