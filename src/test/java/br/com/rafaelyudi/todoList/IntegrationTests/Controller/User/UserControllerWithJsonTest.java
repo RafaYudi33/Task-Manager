@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.restassured.authentication.BasicAuthScheme;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -15,11 +14,9 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.time.LocalDateTime;
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -97,11 +94,39 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
         assertEquals("Invalid CORS request", content);
     }
 
-
-    @DisplayName("Should delete user when everything is ok")
+    @DisplayName("Should returns Invalid Cors Request when domain is not allowed")
     @Test
     @Order(3)
     public void deleteUserCase1(){
+        var specification = new RequestSpecBuilder()
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .setBasePath(basePath)
+                .setPort(TestConfig.SERVER_PORT)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .auth( )
+                    .preemptive()
+                        .basic("Rafael","1234")
+                .pathParam("idUser",user.getId())
+                .when()
+                .delete("{idUser}")
+                .then()
+                .extract()
+                .body()
+                .asString();
+
+        assertEquals("Invalid CORS request", content);
+    }
+
+    @DisplayName("Should delete user when everything is ok")
+    @Test
+    @Order(4)
+    public void deleteUserCase2(){
 
         var specification = new RequestSpecBuilder()
                 .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
@@ -125,4 +150,9 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
 
         assertEquals(204, responseStatusCode);
     }
+
+
+
+
+
 }
