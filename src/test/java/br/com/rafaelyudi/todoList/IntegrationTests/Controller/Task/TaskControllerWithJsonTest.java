@@ -182,6 +182,34 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
         assertEquals(startAt, taskFound.getStartAt());
     }
 
+    @DisplayName("Should return Invalid CORS Request when domain is not allowed")
+    @Test
+    @Order(4)
+    public void findTaskByIdTestCase2(){
+        specification = new RequestSpecBuilder()
+                .setPort(TestConfig.SERVER_PORT)
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .setBasePath(basePath)
+                .setBody(task)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .pathParam("idTask", task.getId())
+                .auth().preemptive().basic("Rafael", "12345")
+                .when()
+                .get("{idTask}")
+                .then()
+                .statusCode(403)
+                .extract()
+                .body()
+                .asString();
+
+        assertEquals("Invalid CORS request", content);
+    }
 
 
 }
