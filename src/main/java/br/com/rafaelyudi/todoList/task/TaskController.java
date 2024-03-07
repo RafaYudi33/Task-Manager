@@ -26,7 +26,7 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/tasks/v1")
+@RequestMapping("/tasks/v1/")
 @Tag(name = "Task" , description = "Endpoints to managing tasks")
 @SecurityScheme(name = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class TaskController {
@@ -35,7 +35,7 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @PostMapping(value = "/", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    @PostMapping( consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Create a task",
@@ -123,7 +123,7 @@ public class TaskController {
     }
 
 
-    @GetMapping(value = "/", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping( produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Find tasks",
             description = "Finds all of a user's tasks",
@@ -157,7 +157,7 @@ public class TaskController {
     }
 
 
-    @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}, 
+    @PutMapping(value = "{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
                 produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 
     @Operation(
@@ -207,7 +207,7 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
     }
     
-    @DeleteMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @DeleteMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Delete a task",
             tags = "Task",

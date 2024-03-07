@@ -13,7 +13,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenApi(){
         return new OpenAPI().info(new Info()
-                .title("To do list")
+                .title("Task Manager")
                 .description("An api to manage tasks")
                 .version("Version 1")
                 .contact(new Contact().email("yudirafael33@gmail.com")));
