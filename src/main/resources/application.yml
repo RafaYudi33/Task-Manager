@@ -1,6 +1,10 @@
-# noinspection undefined
+#file: noinspection undefined
 cors:
   originPatterns: "http://localhost:8080,http://localhost:4200"
+aws:
+  credentials:
+    accessKey: ${AWS_ACCESS_KEY}
+    secretKey: ${AWS_SECRET_KEY}
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

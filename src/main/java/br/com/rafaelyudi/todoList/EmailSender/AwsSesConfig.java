@@ -1,5 +1,6 @@
 package br.com.rafaelyudi.todoList.EmailSender;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,14 +12,17 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 
 @Configuration
 public class AwsSesConfig {
-    
-    String accessKey = ""; // coloque suas proprias chaves para testar 
-    String secretKey = "";
 
-    BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+    @Value("${aws.credentials.accessKey:}")
+    String accessKey = "";
+
+
+   @Value("${aws.credentials.secretKey:}")
+    String secretKey = "";
 
     @Bean
     public AmazonSimpleEmailService AmazonSimpleEmailService(){
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         return AmazonSimpleEmailServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCredentials)).withRegion(Regions.US_EAST_1).build(); 
     }
 }
