@@ -1,6 +1,10 @@
 #file: noinspection undefined
 cors:
   originPatterns: "http://localhosto:8080,http://localhost:4200"
+aws:
+  credentials:
+    accessKey: ${AWS_ACCESS_KEY}
+    secretKey: ${AWS_SECRET_KEY}
 server:
   port: 8888
 spring:

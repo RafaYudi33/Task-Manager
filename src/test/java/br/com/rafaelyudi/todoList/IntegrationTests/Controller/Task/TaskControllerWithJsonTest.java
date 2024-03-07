@@ -143,6 +143,44 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
 
     }
 
+    @DisplayName("Should find a task when everything is ok")
+    @Test
+    @Order(3)
+    public void findTaskByIdTestCase1() throws JsonProcessingException {
+        specification = new RequestSpecBuilder()
+                .setPort(TestConfig.SERVER_PORT)
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .setBasePath(basePath)
+                .setBody(task)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .pathParam("idTask", task.getId())
+                .auth().preemptive().basic("Rafael", "12345")
+                .when()
+                .get("{idTask}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        var taskFound = objectMapper.readValue(content, TaskDTO.class);
+
+        assertNotNull(taskFound);
+        assertNotNull(taskFound.getId());
+
+        assertEquals("Aula", taskFound.getTitle());
+        assertEquals("Aula de Violão", taskFound.getDescription());
+        assertEquals(endAt, taskFound.getEndAt());
+        assertEquals(user.getId(), taskFound.getIdUser());
+        assertEquals("Alta", taskFound.getPriority());
+        assertEquals(startAt, taskFound.getStartAt());
+    }
 
 
 

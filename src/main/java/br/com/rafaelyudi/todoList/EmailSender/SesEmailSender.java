@@ -13,13 +13,6 @@ import br.com.rafaelyudi.todoList.Errors.EmailServiceException;
 @Service 
 public class SesEmailSender {
 
-    @Value(value = "${aws.credentials.accessKey:}")
-    String accessKey = "";
-
-
-    @Value(value = "${aws.credentials.secretKey}")
-    String secretKey = "";
-
 
     private final AmazonSimpleEmailService amazonSimpleEmailService;
    
