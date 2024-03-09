@@ -1,54 +1,59 @@
-# To Do List API
 
-Uma API REST para gerenciar tarefas pessoais.
+<h1 align="center" style="font-weight: bold;">Task Manager API 💻</h1>
 
-## Automação
-
-A automação desta API é ativada todos os dias às 18:00 e envia e-mails para os usuários que possuem tarefas próximas do fim. Para esta automação, foi utilizado o serviço Simple Email Service (SES) da AWS. No período de testes, somente os e-mails que estão cadastrados no SES funcionam para a automação.
-
-## Visão Geral
-
-Esta API permite a criação, leitura e atualização de tarefas em uma lista de afazeres. Foi construída com Spring Boot e utiliza o banco de dados H2 para armazenar as tarefas.
-
-## Recursos Usuários
-
-:ballot_box_with_check: Cadastrar novos usuários
-
-| Método HTTP | Endpoint       | Descrição                                 |
-|-------------|----------------|-------------------------------------------|
-| POST        | /users/        | Cadastra um novo Usuário                  |
-
-## Recursos Tarefas
-
-:ballot_box_with_check: Buscar todas as tarefas
+<div align="center" style="display: flex; justify-content: center;">
+  <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" alt="java">
+  <img src="https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white" alt="spring">
+  <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" alt="mysql">
+  <img src="https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS">
+</div>
 
 
-:ballot_box_with_check: Alterar uma tarefa de maneira parcial ou completa
+<p align="center">
+ <a href="#started">Getting Started</a> • 
+ <a href="#doc">Endpoints Documentation</a> •
+  <a href="#routes">API Endpoints</a> •
+ <a href="#contribute">Contribute</a>
+</p>
 
+<p align="center">
+  <b>A REST API for managing personal tasks.</b>
+</p>
 
-:ballot_box_with_check: Listar todas as tarefas de um usuário
+## 🚀 Getting started
 
+Here you describe how to run your project locally
 
-:ballot_box_with_check: Cadastrar novas tarefas
+### Prerequisites
 
+Ensure you have the following installed:
 
-:ballot_box_with_check: Deletar tarefas
+- Java 17 or higher
+- Maven for dependency management
 
-| Método HTTP | Endpoint       | Descrição                                 |
-|-------------|----------------|-----------------------------------------|
-| GET         | /tasks/        | Retorna todas as tarefas cadastradas    |
-| GET         | /tasks/id      | Retorna lista de tarefas do usuário (c/ Autenticação de Usuário)  |
-| POST        | /tasks/        | Cadastra uma nova tarefa (c/ Autenticação de Usuário)               |
-| PUT         | /tasks/id      | Atualiza uma tarefa existente (c/ Autenticação de Usuário)   |
-| DELETE      | /tasks/id      | Exclui uma tarefa existente  (c/ Autenticação de Usuário)    |
+### Cloning
 
-OBS: Todas as autenticações foram feitas através do Usuário e Senha sendo passados no Basic Auth da requisição.
+Clone the repository:
 
-## Requisitos
+```bash
+git clone your-project-url-in-github
+```
 
-Certifique-se de atender aos seguintes requisitos antes de usar a API:
+### Environment Variables
 
-:information_source: Java 17 ou superior
+Use the `application.properties.example` as reference to create your configuration file `application.properties` with your AWS Credentials. 
 
+```yaml
+aws.credentials.accessKey= ${YOUR_AWS_KEY}
+aws.credentials.secretKey= ${YOUR_AWS_SECRET}
+```
 
-:information_source: Maven para gerenciamento de dependências
+### Starting
+
+Start your project:
+
+```bash
+cd /path/to/your/project
+mvn spring-boot:run
+
+<h2 id="doc">📍 API Endpoints</h2>
