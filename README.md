@@ -14,7 +14,7 @@
 <p align="center">
  <a href="#started">Getting Started</a> • 
   <a href="#routes">API Endpoints</a> •
- <a href="#serviceEmail">Simple Email Service</a>
+ <a href="#email">Simple Email Service</a>
 </p>
 
 <br>
@@ -44,11 +44,11 @@ git clone your-project-url-in-github
 
 ### Environment Variables
 
-Use the `application.properties.example` as reference to create your configuration file `application.properties` with your AWS Credentials. 
+Before running the application, make sure to set up the necessary environment variables. Use the provided `application.properties.example` file as a reference to create your configuration file named `application.properties` with your AWS credentials.
 
 ```yaml
-aws.credentials.accessKey= ${YOUR_AWS_KEY}
-aws.credentials.secretKey= ${YOUR_AWS_SECRET}
+aws.credentials.accessKey= ${YOUR_AWS_ACESS_KEY}
+aws.credentials.secretKey= ${YOUR_AWS_SECRET_KEY}
 ```
 
 ### Starting
@@ -80,10 +80,10 @@ mvn spring-boot:run
 
 
 <div>
-<h3>Tasks Endpoints</h3>
+<h3>Tasks Endpoints:</h3>
   
 | Endpoint                       | Description                                          
-|---------------------------------|-----------------------------------------------------
+|--------------------------------|-----------------------------------------------------
 | <kbd>GET /tasks/v1/:id</kbd>   | <kbd>Find a task by ID</kbd>                       
 | <kbd>PUT /tasks/v1/:id</kbd>   | <kbd>Update a task by passing changes in JSON or XML (only the fields to be updated)</kbd>
 | <kbd>DELETE /tasks/v1/:id</kbd>| <kbd>Delete a task by passing task ID</kbd>
@@ -91,4 +91,11 @@ mvn spring-boot:run
 | <kbd>POST /tasks/v1/</kbd>     | <kbd>Create a task by passing JSON or XML</kbd>
 
 </div>
+<br>
+
+<h2 id="email">📧 Simple Email Service</h2>
+
+The application uses Amazon's Simple Email Service (SES) for sending emails. Since this is a personal project, I used the free tier of SES. In this version, it's necessary to verify the email addresses that will be used to send or receive emails.
+
+The application is configured to invoke the service every day at 18:00. However, to allow users to test immediately, I have enabled an endpoint <kbd>POST /email</kbd>.
 
