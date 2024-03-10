@@ -12,7 +12,7 @@ import br.com.rafaelyudi.todoList.User.IUserRepository;
 
 @Component
 @EnableScheduling
-public class TaskEmailSenderService {
+public class EmailSenderService {
     
     @Autowired
     private TaskService taskService; 
@@ -24,23 +24,20 @@ public class TaskEmailSenderService {
     private IUserRepository userRepository;
 
 
-    @Scheduled(cron = "0 0 18 * * ?")
+   // @Scheduled(cron = "0 0 18 * * ?")
+    @Scheduled(fixedRate = 10000)
     public void taskEmailSenderService(){
-        
-        var tasks = this.taskService.findTasksCloseEnd();
-        
+
+        var tasks = this.taskService.findTasksCloseStart();
+
         
         for(TaskModel task :  tasks){
-            
-            
+
             var userOptional =  this.userRepository.findById(task.getIdUser());
-            
             if (userOptional.isPresent()) {
                 UserModel user = userOptional.get();
-                var email = user.getEmail();
-
-                this.sesEmailSender.sendEmail(email, "Tarefa Perto do Fim"
-                ,"Sua tarefa esta há menos de 24 horas de acabar");
+                this.sesEmailSender.sendEmail(user.getEmail(), "Tarefa perto do ínício"
+                ,"Não se esqueça! "+task.getTitle()+" começa em menos de 1 hora!");
             }
             
         }

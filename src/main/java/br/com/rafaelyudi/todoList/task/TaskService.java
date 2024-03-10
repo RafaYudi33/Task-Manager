@@ -33,6 +33,14 @@ public class TaskService {
         return this.taskRepository.findByEndAtBetween(currentDate, oneDayForEnd);
     }
 
+    public List<TaskModel> findTasksCloseStart() {
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime oneHourForStart = currentDate.plusHours(1);
+
+        return this.taskRepository.findByStartAtBetween(currentDate, oneHourForStart);
+    }
+
+
     void dateValidation(TaskDTO data) throws InvalidDateException {
 
         LocalDateTime currentDate = LocalDateTime.now();
