@@ -70,10 +70,10 @@ mvn spring-boot:run
 <div>
 <h3>Users Endpoints:</h3>
 
-  | route               | description                                          
+  | Endpoint             | Description                                         
   |----------------------|-----------------------------------------------------
-  | <kbd>POST /users/v1/</kbd>     | Create a user by passing in JSON or XML
-  | <kbd>DELETE /users/v1/id</kbd> | Delete a user by passing user ID 
+  | <kbd>POST /users/v1/</kbd>     | <kbd>Create a user by passing in JSON or XML</kbd>
+  | <kbd>DELETE /users/v1/id</kbd> | <kbd>Delete a user by passing user ID </kbd>
 
 </div>
 
@@ -82,13 +82,13 @@ mvn spring-boot:run
 <div>
 <h3>Tasks Endpoints</h3>
   
-| Endpoint                        | Description                                          
+| Endpoint                       | Description                                          
 |---------------------------------|-----------------------------------------------------
-| <kbd>GET /tasks/v1/:id</kbd>   | Find a task by ID                       
-| <kbd>PUT /tasks/v1/:id</kbd>   | Update a task by passing changes in JSON or XML (only the fields to be updated)
-| <kbd>DELETE /tasks/v1/:id</kbd>| Delete a task by passing task ID
-| <kbd>GET /tasks/v1/</kbd>      | Find all tasks from a specific user (user is retrieved through the authentication header)
-| <kbd>POST /tasks/v1/</kbd>     | Create a task by passing JSON or XML
+| <kbd>GET /tasks/v1/:id</kbd>   | <kbd>Find a task by ID</kbd>                       
+| <kbd>PUT /tasks/v1/:id</kbd>   | <kbd>Update a task by passing changes in JSON or XML (only the fields to be updated)</kbd>
+| <kbd>DELETE /tasks/v1/:id</kbd>| <kbd>Delete a task by passing task ID</kbd>
+| <kbd>GET /tasks/v1/</kbd>      | <kbd>Find all tasks from a specific user (user is retrieved through the authentication header)</kbd>
+| <kbd>POST /tasks/v1/</kbd>     | <kbd>Create a task by passing JSON or XML</kbd>
 
 </div>
 
