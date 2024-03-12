@@ -114,7 +114,7 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     }
 
 
-    @DisplayName("Should return Invalid CORS Request when domain is not allowed")
+    @DisplayName("Should return Invalid CORS Request when domain is not allowed to create a task")
     @Test
     @Order(2)
     public void createTaskTestCase2(){
@@ -152,7 +152,6 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
                 .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
                 .setContentType(TestConfig.MEDIA_TYPE_JSON)
                 .setBasePath(basePath)
-                .setBody(task)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
@@ -182,7 +181,7 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
         assertEquals(startAt, taskFound.getStartAt());
     }
 
-    @DisplayName("Should return Invalid CORS Request when domain is not allowed")
+    @DisplayName("Should return Invalid CORS Request when domain is not allowed to find a task")
     @Test
     @Order(4)
     public void findTaskByIdTestCase2(){
@@ -191,7 +190,6 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
                 .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
                 .setContentType(TestConfig.MEDIA_TYPE_JSON)
                 .setBasePath(basePath)
-                .setBody(task)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
@@ -209,6 +207,58 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
                 .asString();
 
         assertEquals("Invalid CORS request", content);
+    }
+
+
+    @DisplayName("Should update when everything is ok")
+    @Test
+    @Order(5)
+    public void updateTaskTestCase1() throws JsonProcessingException {
+        TaskDTO contentToUpdate = new TaskDTO();
+        contentToUpdate.setPriority("Baixa");
+        contentToUpdate.setTitle("Título atualizado");
+
+        specification = new RequestSpecBuilder()
+                .setPort(TestConfig.SERVER_PORT)
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .setBasePath(basePath)
+                .setBody(contentToUpdate)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .pathParam("idTask", task.getId())
+                .auth().preemptive().basic("Rafael", "12345")
+                .when()
+                .put("{idTask}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        task = objectMapper.readValue(content, TaskDTO.class);
+
+        assertNotNull(task);
+        assertNotNull(task.getId());
+        assertEquals("Título atualizado", task.getTitle());
+        assertEquals("Aula de Violão", task.getDescription());
+        assertEquals(endAt, task.getEndAt());
+        assertEquals(user.getId(), task.getIdUser());
+        assertEquals("Baixa", task.getPriority());
+        assertEquals(startAt, task.getStartAt());
+
+    }
+
+    @DisplayName("Should return Invalid CORS request when domain is not allowed to update a task")
+    @Test
+    @Order(6)
+    public void updateTaskTestCase2(){
+
+
     }
 
 
