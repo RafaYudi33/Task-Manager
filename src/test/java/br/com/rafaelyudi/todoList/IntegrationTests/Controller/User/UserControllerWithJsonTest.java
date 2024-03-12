@@ -138,6 +138,7 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
                 .build();
 
 
+
         var responseStatusCode = given()
                 .spec(specification)
                 .auth().preemptive().basic("Rafael","1234")
