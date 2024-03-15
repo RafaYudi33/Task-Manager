@@ -6,11 +6,11 @@ import java.util.Date;
 public class CustomResponseError {
 
     private String message;
-    private Date timestamp;
+    private LocalDateTime timestamp;
 
     private String details;
 
-    public CustomResponseError(String message, Date timestamp, String details) {
+    public CustomResponseError(String message, LocalDateTime timestamp, String details) {
         this.message = message;
         this.timestamp = timestamp;
         this.details = details;
@@ -24,11 +24,11 @@ public class CustomResponseError {
         this.message = message;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

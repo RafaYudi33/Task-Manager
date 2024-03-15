@@ -20,6 +20,9 @@ public class AwsSesConfig {
    @Value("${aws.credentials.secretKey:}")
     String secretKey = "";
 
+
+
+
     @Bean
     public AmazonSimpleEmailService AmazonSimpleEmailService(){
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
