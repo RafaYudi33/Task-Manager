@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Date;
 
 import br.com.rafaelyudi.todoList.Errors.CustomResponseError;
 import com.fasterxml.jackson.databind.ObjectMapper;

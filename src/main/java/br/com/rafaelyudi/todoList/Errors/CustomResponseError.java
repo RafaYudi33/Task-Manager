@@ -1,7 +1,6 @@
 package br.com.rafaelyudi.todoList.Errors;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class CustomResponseError {
 
