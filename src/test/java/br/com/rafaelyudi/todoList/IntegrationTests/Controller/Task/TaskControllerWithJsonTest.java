@@ -350,4 +350,58 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
 
         assertEquals("Invalid CORS request", content);
     }
+
+
+
+    @DisplayName("Should delete a task when everything is ok!")
+    @Test
+    @Order(8)
+    public void deleteTaskTestCase1() {
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .setPort(TestConfig.SERVER_PORT)
+                .setBasePath(basePath)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        given()
+                .spec(specification)
+                .pathParam("taskId", task.getId())
+                .auth().preemptive().basic("Rafael","12345")
+                .when()
+                .delete("{taskId}")
+                .then()
+                .statusCode(204);
+    }
+
+    @DisplayName("Should return Invalid CORS request when domain is not allowed to delete a task")
+    @Test
+    @Order(8)
+    public void deleteTaskTestCase2() {
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .setPort(TestConfig.SERVER_PORT)
+                .setBasePath(basePath)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .pathParam("taskId", task.getId())
+                .auth().preemptive().basic("Rafael","12345")
+                .when()
+                .delete("{taskId}")
+                .then()
+                .statusCode(403)
+                .extract()
+                .body()
+                .asString();
+
+        assertEquals("Invalid CORS request", content);
+    }
+
 }

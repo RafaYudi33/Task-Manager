@@ -1,5 +1,7 @@
-package br.com.rafaelyudi.todoList.Task;
+package br.com.rafaelyudi.todoList.EmailSender;
 
+import br.com.rafaelyudi.todoList.Task.TaskModel;
+import br.com.rafaelyudi.todoList.Task.TaskService;
 import br.com.rafaelyudi.todoList.User.UserModel;
 
 
@@ -15,7 +17,7 @@ import br.com.rafaelyudi.todoList.User.IUserRepository;
 public class EmailSenderService {
     
     @Autowired
-    private TaskService taskService; 
+    private TaskService taskService;
     
     @Autowired
     private SesEmailSender sesEmailSender; 
@@ -23,9 +25,7 @@ public class EmailSenderService {
     @Autowired
     private IUserRepository userRepository;
 
-
-   // @Scheduled(cron = "0 0 18 * * ?")
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 3600000)
     public void taskEmailSenderService(){
 
         var tasks = this.taskService.findTasksCloseStart();
