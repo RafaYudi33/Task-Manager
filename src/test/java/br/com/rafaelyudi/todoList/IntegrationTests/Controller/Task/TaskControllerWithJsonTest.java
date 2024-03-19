@@ -5,6 +5,7 @@ import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.UserDTO;
 import br.com.rafaelyudi.todoList.IntegrationTests.testcontainers.AbstractIntegrationTest;
 import br.com.rafaelyudi.todoList.config.TestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -17,8 +18,10 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -252,14 +255,99 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
         assertEquals(startAt, task.getStartAt());
 
     }
-
     @DisplayName("Should return Invalid CORS request when domain is not allowed to update a task")
     @Test
     @Order(6)
-    public void updateTaskTestCase2(){
+    public void updateTaskTestCase2() {
+        TaskDTO contentToUpdate = new TaskDTO();
+        contentToUpdate.setPriority("Baixa");
+        contentToUpdate.setTitle("Título atualizado");
 
+        specification = new RequestSpecBuilder()
+                .setPort(TestConfig.SERVER_PORT)
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .setBasePath(basePath)
+                .setBody(contentToUpdate)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
 
+        var content = given()
+                .spec(specification)
+                .pathParam("idTask", task.getId())
+                .auth().preemptive().basic("Rafael", "12345")
+                .when()
+                .put("{idTask}")
+                .then()
+                .statusCode(403)
+                .extract()
+                .body()
+                .asString();
+
+        assertEquals("Invalid CORS request", content);
     }
 
 
+    @DisplayName("Should get of all user´s tasks")
+    @Test
+    @Order(7)
+    public void getTaskSpecificUserTestCase1() throws JsonProcessingException {
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .setPort(TestConfig.SERVER_PORT)
+                .setBasePath(basePath)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .auth().preemptive().basic("Rafael","12345")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        List<TaskDTO> tasks =  objectMapper.readValue(content, new TypeReference<List<TaskDTO>>(){});
+
+        TaskDTO taskExpected = new TaskDTO(
+                task.getId(), "Aula de Violão", "Título atualizado", "Baixa", startAt, endAt, task.getIdUser(), task.getCreatedAt()
+        );
+
+           for(TaskDTO task: tasks){
+               assertThat(task).usingRecursiveComparison().isEqualTo(taskExpected);
+           }
+    }
+
+    @DisplayName("Should return Invalid CORS request when domain is not allowed to get all of a user´s tasks")
+    @Test
+    @Order(8)
+    public void getTaskSpecificUserTestCase2() {
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .setPort(TestConfig.SERVER_PORT)
+                .setBasePath(basePath)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .auth().preemptive().basic("Rafael","12345")
+                .when()
+                .get()
+                .then()
+                .statusCode(403)
+                .extract()
+                .body()
+                .asString();
+
+        assertEquals("Invalid CORS request", content);
+    }
 }
