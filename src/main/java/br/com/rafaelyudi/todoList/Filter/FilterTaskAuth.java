@@ -30,10 +30,10 @@ public class FilterTaskAuth extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        System.out.println("teste1");
+        System.out.println(request.getMethod());
         var servletPath = request.getServletPath();
-                if(servletPath.startsWith("/tasks/")||((servletPath.startsWith("/users/v1/")) && (!"POST".equalsIgnoreCase(request.getMethod())))){
-
+                if(servletPath.startsWith("/tasks/")||((servletPath.startsWith("/users/v1/")) && (!"OPTIONS".equalsIgnoreCase(request.getMethod())) && (!"POST".equalsIgnoreCase(request.getMethod())))){
                     response.setHeader("Access-Control-Allow-Origin", "*");
                     response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
                     response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
@@ -76,6 +76,7 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                     }
 
                 }else{
+                    System.out.println("teste");
                     filterChain.doFilter(request, response);
                 }
             }
