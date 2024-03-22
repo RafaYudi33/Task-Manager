@@ -2,6 +2,7 @@ package br.com.rafaelyudi.todoList.IntegrationTests.Controller.User;
 
 import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.UserDTO;
 import br.com.rafaelyudi.todoList.IntegrationTests.testcontainers.AbstractIntegrationTest;
+import br.com.rafaelyudi.todoList.config.ObjectMapperConfig;
 import br.com.rafaelyudi.todoList.config.TestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -29,10 +30,8 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
 
     @BeforeAll
     public static void setUp(){
-        objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        objectMapper.registerModule(new JavaTimeModule());
-        user = new UserDTO(null, "Rafael", "Rafael Yudi","1234","rafamail", LocalDateTime.now());
+        objectMapper = ObjectMapperConfig.configureObjectMapper();
+        user = new UserDTO(null, "Rafael", "Rafael Yudi","1234","rafamail", null);
     }
 
     @DisplayName("Should create user when everything is ok!")

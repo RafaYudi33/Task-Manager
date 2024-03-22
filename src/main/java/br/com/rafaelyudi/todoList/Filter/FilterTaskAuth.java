@@ -30,14 +30,16 @@ public class FilterTaskAuth extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-                var servletPath = request.getServletPath();
-                
 
-
+        var servletPath = request.getServletPath();
                 if(servletPath.startsWith("/tasks/")||((servletPath.startsWith("/users/v1/")) && (!"POST".equalsIgnoreCase(request.getMethod())))){
 
-                    try {
+                    response.setHeader("Access-Control-Allow-Origin", "*");
+                    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                    response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+                    response.setHeader("Access-Control-Allow-Credentials", "true");
 
+                    try {
 
                         var authorization = request.getHeader("Authorization");
                         var auth_encoded = authorization.substring("Basic".length()).trim();
@@ -77,5 +79,4 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                     filterChain.doFilter(request, response);
                 }
             }
-    
 }

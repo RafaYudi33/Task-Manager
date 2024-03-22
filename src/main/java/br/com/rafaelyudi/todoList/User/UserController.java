@@ -26,9 +26,9 @@ import java.util.UUID;
 @Tag(name = "User", description = "Endpoints to managing users")
 @SecurityScheme(name = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class UserController {
-
     @Autowired
     private UserService userService;
+
 
     @PostMapping( consumes ={MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
                  produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -100,6 +100,12 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@Parameter(description = "The id of the task to delete") @PathVariable(value = "id") UUID id, HttpServletRequest request){
         this.userService.delete(id, request);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("")
+    public ResponseEntity<String> getUsers(){
+        return ResponseEntity.ok().body("Hello");
     }
 
 }

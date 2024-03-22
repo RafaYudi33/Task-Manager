@@ -2,7 +2,10 @@ package br.com.rafaelyudi.todoList.IntegrationTests.Controller.Task;
 
 import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.TaskDTO;
 import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.UserDTO;
+import br.com.rafaelyudi.todoList.IntegrationTests.Mocks.MockTaskRequests;
+import br.com.rafaelyudi.todoList.IntegrationTests.Mocks.MockUserRequests;
 import br.com.rafaelyudi.todoList.IntegrationTests.testcontainers.AbstractIntegrationTest;
+import br.com.rafaelyudi.todoList.config.ObjectMapperConfig;
 import br.com.rafaelyudi.todoList.config.TestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -18,6 +21,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -33,6 +37,9 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static UserDTO user;
     private static TaskDTO task;
+    private static MockUserRequests mockUser;
+
+    private static MockTaskRequests mockTask;
 
     private static final LocalDateTime startAt =  LocalDateTime.of(2030,1,30,10,0);
     private static final LocalDateTime endAt = LocalDateTime.of(2030,3,30,10,0);
@@ -41,47 +48,20 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
 
     @BeforeAll
     public static void setUp(){
-       objectMapper = new ObjectMapper();
-       objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-       objectMapper.registerModule(new JavaTimeModule());
-       user = new UserDTO(null, "Rafael", "Rafael Yudi","12345","rafamail", null);
+       objectMapper = ObjectMapperConfig.configureObjectMapper();
+       mockUser = new MockUserRequests();
+       mockTask = new MockTaskRequests();
        task = new TaskDTO(null, "Aula de Violão", "Aula", "Alta", startAt, endAt, null, null);
-
-
     }
 
 
-    public void createAnUserToTestTasks() throws JsonProcessingException {
 
-        var specificationUser =  new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setBasePath("/users/v1/")
-                .setBody(user)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setPort(TestConfig.SERVER_PORT)
-                .build();
-
-       var content = given()
-                .spec(specificationUser)
-               .when()
-               .post()
-               .then()
-               .extract()
-               .body()
-               .asString();
-
-       user = objectMapper.readValue(content , UserDTO.class);
-    }
 
     @DisplayName("Should create a task when everything is ok")
     @Test
     @Order(1)
     public void createTaskTestCase1() throws JsonProcessingException {
-
-        createAnUserToTestTasks();
-
+        user = mockUser.mockPostUser(objectMapper);
         specification = new RequestSpecBuilder()
                 .setPort(TestConfig.SERVER_PORT)
                 .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
@@ -94,7 +74,7 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
 
         var content = given()
                 .spec(specification)
-                .auth().preemptive().basic("Rafael", "12345")
+                .auth().preemptive().basic(user.getUsername(), user.getPassword())
                 .when()
                 .post()
                 .then()
@@ -289,73 +269,11 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     }
 
 
-    @DisplayName("Should get of all user´s tasks")
-    @Test
-    @Order(7)
-    public void getTaskSpecificUserTestCase1() throws JsonProcessingException {
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setPort(TestConfig.SERVER_PORT)
-                .setBasePath(basePath)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-        var content = given()
-                .spec(specification)
-                .auth().preemptive().basic("Rafael","12345")
-                .when()
-                .get()
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        List<TaskDTO> tasks =  objectMapper.readValue(content, new TypeReference<List<TaskDTO>>(){});
-
-        TaskDTO taskExpected = new TaskDTO(
-                task.getId(), "Aula de Violão", "Título atualizado", "Baixa", startAt, endAt, task.getIdUser(), task.getCreatedAt()
-        );
-
-           for(TaskDTO task: tasks){
-               assertThat(task).usingRecursiveComparison().isEqualTo(taskExpected);
-           }
-    }
-
-    @DisplayName("Should return Invalid CORS request when domain is not allowed to get all of a user´s tasks")
-    @Test
-    @Order(8)
-    public void getTaskSpecificUserTestCase2() {
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setPort(TestConfig.SERVER_PORT)
-                .setBasePath(basePath)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-        var content = given()
-                .spec(specification)
-                .auth().preemptive().basic("Rafael","12345")
-                .when()
-                .get()
-                .then()
-                .statusCode(403)
-                .extract()
-                .body()
-                .asString();
-
-        assertEquals("Invalid CORS request", content);
-    }
-
 
 
     @DisplayName("Should delete a task when everything is ok!")
     @Test
-    @Order(8)
+    @Order(7)
     public void deleteTaskTestCase1() {
         specification = new RequestSpecBuilder()
                 .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
@@ -403,5 +321,71 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
 
         assertEquals("Invalid CORS request", content);
     }
+
+
+
+    @DisplayName("Should get of all user´s tasks")
+    @Test
+    @Order(9)
+    public void getTaskSpecificUserTestCase1() throws JsonProcessingException {
+
+        var mockTasks = mockTask.mockPostListTasks(4,  user);
+
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .setPort(TestConfig.SERVER_PORT)
+                .setBasePath(basePath)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .auth().preemptive().basic("Rafael","12345")
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        List<TaskDTO> tasks =  objectMapper.readValue(content, new TypeReference<List<TaskDTO>>(){});
+
+        tasks.sort(Comparator.comparing(TaskDTO::getCreatedAt));
+        mockTasks.sort(Comparator.comparing(TaskDTO::getCreatedAt));
+        for (int i = 0; i < tasks.size(); i++) {
+            assertThat(tasks.get(i)).usingRecursiveComparison().isEqualTo(mockTasks.get(i));
+        }
+    }
+
+    @DisplayName("Should return Invalid CORS request when domain is not allowed to get all of a user´s tasks")
+    @Test
+    @Order(10)
+    public void getTaskSpecificUserTestCase2() {
+        specification = new RequestSpecBuilder()
+                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .setPort(TestConfig.SERVER_PORT)
+                .setBasePath(basePath)
+                .setContentType(TestConfig.MEDIA_TYPE_JSON)
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        var content = given()
+                .spec(specification)
+                .auth().preemptive().basic("Rafael","12345")
+                .when()
+                .get()
+                .then()
+                .statusCode(403)
+                .extract()
+                .body()
+                .asString();
+
+        assertEquals("Invalid CORS request", content);
+    }
+
 
 }

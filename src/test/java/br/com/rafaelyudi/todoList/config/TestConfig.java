@@ -11,5 +11,9 @@ public class TestConfig {
     public static final String MEDIA_TYPE_JSON = "application/json";
     public static final String MEDIA_TYPE_XML = "application/xml";
 
+    public static final String basePathUser = "/users/v1/";
+
+    public static final String basePathTask = "/tasks/v1/";
+
 
 }
