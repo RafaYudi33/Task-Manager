@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,21 +24,22 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class FilterTaskAuth extends OncePerRequestFilter{
 
-
+    @Value("${cors.originPatterns:}")
+    private String corsMap = "";
     @Autowired 
     private IUserRepository userRepository; 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        System.out.println("teste1");
-        System.out.println(request.getMethod());
         var servletPath = request.getServletPath();
                 if(servletPath.startsWith("/tasks/")||((servletPath.startsWith("/users/v1/")) && (!"OPTIONS".equalsIgnoreCase(request.getMethod())) && (!"POST".equalsIgnoreCase(request.getMethod())))){
+
                     response.setHeader("Access-Control-Allow-Origin", "*");
                     response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
                     response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
                     response.setHeader("Access-Control-Allow-Credentials", "true");
+
 
                     try {
 

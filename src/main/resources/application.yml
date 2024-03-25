@@ -1,7 +1,7 @@
 #file: noinspection undefined
 
 cors:
-  originPatterns: "http://localhost:8080,http://localhost:4200,null"
+  originPatterns: "http://localhost:8080,http://localhost:4200"
 aws:
   credentials:
     accessKey: ${AWS_ACCESS_KEY}

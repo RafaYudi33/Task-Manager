@@ -103,10 +103,38 @@ public class UserController {
     }
 
 
-    @GetMapping("")
-    public ResponseEntity<String> getUsers(){
-        return ResponseEntity.ok().body("Hello");
-    }
+    @Operation(
+            summary = "login a user",
+            tags = "User",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = UserDTO.class))
+                    }),
 
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Internal error", responseCode = "500", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
+                    })
+            }
+    )
+    @SecurityRequirement(name = "Basic Auth")
+    @GetMapping("login")
+    public ResponseEntity<?> getUsers(HttpServletRequest request) {
+        var user = this.userService.login(request);
+        return ResponseEntity.ok().body(user);
+    }
 }
 

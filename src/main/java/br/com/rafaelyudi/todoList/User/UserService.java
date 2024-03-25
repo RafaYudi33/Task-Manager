@@ -51,4 +51,13 @@ public class UserService {
           if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
           this.userRepository.delete(userModel);
      }
+
+     public UserDTO login(HttpServletRequest request){
+          var idUser =  request.getAttribute("idUser");
+
+          if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
+          var userModel = this.userRepository.findById((UUID) idUser);
+          return ModelMapperConverter.parseObject(userModel, UserDTO.class);
+     }
+
 }
