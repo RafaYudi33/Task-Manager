@@ -35,11 +35,6 @@ public class FilterTaskAuth extends OncePerRequestFilter{
         var servletPath = request.getServletPath();
                 if(servletPath.startsWith("/tasks/")||((servletPath.startsWith("/users/v1/")) && (!"OPTIONS".equalsIgnoreCase(request.getMethod())) && (!"POST".equalsIgnoreCase(request.getMethod())))){
 
-                    response.setHeader("Access-Control-Allow-Origin", "*");
-                    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-                    response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-                    response.setHeader("Access-Control-Allow-Credentials", "true");
-
 
                     try {
 
