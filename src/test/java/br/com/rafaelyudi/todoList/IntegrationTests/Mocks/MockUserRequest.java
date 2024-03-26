@@ -3,18 +3,16 @@ package br.com.rafaelyudi.todoList.IntegrationTests.Mocks;
 import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.UserDTO;
 import br.com.rafaelyudi.todoList.config.TestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 
 import static io.restassured.RestAssured.given;
-public class MockUserRequests {
+public class MockUserRequest {
 
-    public MockUserRequests() {
+    public MockUserRequest() {
     }
 
     public UserDTO mockPostUser(ObjectMapper objectMapper) throws JsonProcessingException {

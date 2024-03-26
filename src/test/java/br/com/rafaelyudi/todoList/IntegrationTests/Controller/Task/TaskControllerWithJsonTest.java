@@ -2,16 +2,14 @@ package br.com.rafaelyudi.todoList.IntegrationTests.Controller.Task;
 
 import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.TaskDTO;
 import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.UserDTO;
-import br.com.rafaelyudi.todoList.IntegrationTests.Mocks.MockTaskRequests;
-import br.com.rafaelyudi.todoList.IntegrationTests.Mocks.MockUserRequests;
+import br.com.rafaelyudi.todoList.IntegrationTests.Mocks.MockTaskRequest;
+import br.com.rafaelyudi.todoList.IntegrationTests.Mocks.MockUserRequest;
 import br.com.rafaelyudi.todoList.IntegrationTests.testcontainers.AbstractIntegrationTest;
 import br.com.rafaelyudi.todoList.config.ObjectMapperConfig;
 import br.com.rafaelyudi.todoList.config.TestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -37,9 +35,9 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static UserDTO user;
     private static TaskDTO task;
-    private static MockUserRequests mockUser;
+    private static MockUserRequest mockUser;
 
-    private static MockTaskRequests mockTask;
+    private static MockTaskRequest mockTask;
 
     private static final LocalDateTime startAt =  LocalDateTime.of(2030,1,30,10,0);
     private static final LocalDateTime endAt = LocalDateTime.of(2030,3,30,10,0);
@@ -49,12 +47,10 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @BeforeAll
     public static void setUp(){
        objectMapper = ObjectMapperConfig.configureObjectMapper();
-       mockUser = new MockUserRequests();
-       mockTask = new MockTaskRequests();
+       mockUser = new MockUserRequest();
+       mockTask = new MockTaskRequest();
        task = new TaskDTO(null, "Aula de Violão", "Aula", "Alta", startAt, endAt, null, null);
     }
-
-
 
 
     @DisplayName("Should create a task when everything is ok")

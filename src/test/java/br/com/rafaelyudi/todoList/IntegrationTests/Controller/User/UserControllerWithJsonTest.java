@@ -150,10 +150,4 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
 
         assertEquals(204, responseStatusCode);
     }
-
-
-
-
-
-
 }

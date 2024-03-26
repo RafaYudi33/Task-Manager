@@ -16,10 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-public class MockTaskRequests {
+public class MockTaskRequest {
     private static final LocalDateTime startAt =  LocalDateTime.of(2030,1,30,10,0);
     private static final LocalDateTime endAt = LocalDateTime.of(2030,3,30,10,0);
     private static final ObjectMapper objectMapper = ObjectMapperConfig.configureObjectMapper();
@@ -63,6 +60,4 @@ public class MockTaskRequests {
         }
         return listOfTasksPersisted;
     }
-
-
 }
