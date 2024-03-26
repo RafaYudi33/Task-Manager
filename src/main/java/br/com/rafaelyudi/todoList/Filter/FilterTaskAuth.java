@@ -34,8 +34,6 @@ public class FilterTaskAuth extends OncePerRequestFilter{
             throws ServletException, IOException {
         var servletPath = request.getServletPath();
                 if(servletPath.startsWith("/tasks/")||((servletPath.startsWith("/users/v1/")) && (!"OPTIONS".equalsIgnoreCase(request.getMethod())) && (!"POST".equalsIgnoreCase(request.getMethod())))){
-
-
                     try {
 
                         var authorization = request.getHeader("Authorization");
@@ -73,7 +71,6 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                     }
 
                 }else{
-                    System.out.println("teste");
                     filterChain.doFilter(request, response);
                 }
             }
