@@ -379,7 +379,6 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
                 .extract()
                 .body()
                 .asString();
-
         assertEquals("Invalid CORS request", content);
     }
 
