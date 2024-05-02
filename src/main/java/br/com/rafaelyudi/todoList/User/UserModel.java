@@ -1,21 +1,26 @@
 package br.com.rafaelyudi.todoList.User;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
+import br.com.rafaelyudi.todoList.Security.Role;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import org.hibernate.annotations.Type;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Objects;
 
 
 @Entity(name = "tb_users")
-public class UserModel {
+public class UserModel implements UserDetails {
     
     @Id
     @GeneratedValue(generator = "UUID")
@@ -26,6 +31,9 @@ public class UserModel {
     private String name; 
     private String password; 
     private String email;
+
+    private Role role;
+
     
     @CreationTimestamp
     @Column(updatable = false)
@@ -42,6 +50,7 @@ public class UserModel {
         this.password = password;
         this.email = email;
         this.createdAt = createdAt;
+        this.role = Role.USER;
     }
 
     public UUID getId() {
@@ -56,6 +65,26 @@ public class UserModel {
         return this.username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -66,6 +95,14 @@ public class UserModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+         if(this.role == Role.ADMIN) return List.of(
+                 new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER")
+         );
+         else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     public String getPassword() {
@@ -92,62 +129,24 @@ public class UserModel {
         this.createdAt = createdAt;
     }
 
-    public UserModel id(UUID id) {
-        setId(id);
-        return this;
+    public Role getRole() {
+        return role;
     }
 
-    public UserModel username(String username) {
-        setUsername(username);
-        return this;
-    }
-
-    public UserModel name(String name) {
-        setName(name);
-        return this;
-    }
-
-    public UserModel password(String password) {
-        setPassword(password);
-        return this;
-    }
-
-    public UserModel email(String email) {
-        setEmail(email);
-        return this;
-    }
-
-    public UserModel createdAt(LocalDateTime createdAt) {
-        setCreatedAt(createdAt);
-        return this;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof UserModel)) {
-            return false;
-        }
-        UserModel userModel = (UserModel) o;
-        return Objects.equals(id, userModel.id) && Objects.equals(username, userModel.username) && Objects.equals(name, userModel.name) && Objects.equals(password, userModel.password) && Objects.equals(email, userModel.email) && Objects.equals(createdAt, userModel.createdAt);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        UserModel userModel = (UserModel) object;
+        return Objects.equals(getId(), userModel.getId()) && Objects.equals(getUsername(), userModel.getUsername()) && Objects.equals(getName(), userModel.getName()) && Objects.equals(getPassword(), userModel.getPassword()) && Objects.equals(getEmail(), userModel.getEmail()) && getRole() == userModel.getRole() && Objects.equals(getCreatedAt(), userModel.getCreatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, name, password, email, createdAt);
+        return Objects.hash(getId(), getUsername(), getName(), getPassword(), getEmail(), getRole(), getCreatedAt());
     }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " id='" + getId() + "'" +
-            ", username='" + getUsername() + "'" +
-            ", name='" + getName() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            "}";
-    }
-    
 }
