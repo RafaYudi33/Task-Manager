@@ -6,6 +6,9 @@ aws:
   credentials:
     accessKey: ${AWS_ACCESS_KEY}
     secretKey: ${AWS_SECRET_KEY}
+security:
+  jwt:
+    secretKey: "rafs3452"
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
