@@ -12,11 +12,15 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -29,8 +33,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthenticationManager auth;
 
-    @PostMapping( consumes ={MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+
+    @PostMapping( value = "/register",consumes ={MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
                  produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Create a user",
@@ -98,7 +105,7 @@ public class UserController {
     )
     @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<?> deleteUser(@Parameter(description = "The id of the task to delete") @PathVariable(value = "id") UUID id, HttpServletRequest request){
-        this.userService.delete(id, request);
+        this.userService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -131,10 +138,12 @@ public class UserController {
             }
     )
     @SecurityRequirement(name = "Basic Auth")
-    @GetMapping("login")
-    public ResponseEntity<?> getUsers(HttpServletRequest request) {
-        var user = this.userService.login(request);
-        return ResponseEntity.ok().body(user);
+    @PostMapping("login")
+    public ResponseEntity<?> login(@RequestBody @Valid UserCredentialsDTO credentials) {
+
+        this.userService.login(credentials);
+
+        return  ResponseEntity.ok().build();
     }
 }
 
