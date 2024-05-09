@@ -59,7 +59,6 @@ public class TaskServiceTest {
         taskDTO.setIdUser(null);
         TaskModel entity = inputObject.mockTaskModel(1);
 
-
         when(request.getAttribute("idUser")).thenReturn(entity.getIdUser());
         when(utils.verifyAuthorization(entity.getIdUser())).thenReturn(true);
 

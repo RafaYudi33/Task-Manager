@@ -15,7 +15,7 @@ public class MockUser {
         user.setUsername("UsernameTest" + number);
         user.setEmail("EmailTest" + number);
         user.setPassword("passwordTest" + number);
-        user.setCreatedAt(LocalDateTime.of(2024, 01, 30, 10, 00, 00)); 
+        user.setCreatedAt(LocalDateTime.of(2024, 1, 30, 10, 00, 00));
         return user;
     }
 
@@ -26,7 +26,7 @@ public class MockUser {
         user.setUsername("UsernameTest" + number);
         user.setEmail("EmailTest" + number);
         user.setPassword("passwordTest" + number);
-        user.setCreatedAt(LocalDateTime.of(2024, 01, 30, 10, 00, 00)); 
+        user.setCreatedAt(LocalDateTime.of(2024, 1, 30, 10, 0, 0));
         return user; 
     }
 

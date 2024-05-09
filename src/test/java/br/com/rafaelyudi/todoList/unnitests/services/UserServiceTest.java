@@ -43,7 +43,7 @@ public class UserServiceTest {
 
 
     @Test
-    @DisplayName("Should create task when everything is ok.")
+    @DisplayName("Should create user when everything is ok.")
     public void testCreateUserCase1(){
         UserDTO user = inputObject.mockUserDto(1); 
         UserModel entity = inputObject.mockUserModel(1); 

@@ -12,5 +12,8 @@ public interface IUserRepository extends JpaRepository<UserModel, UUID>{
    List<UserModel> findAll();
    @NonNull
    Optional<UserModel> findById(@NonNull UUID id);
+
+   @Override
+   void deleteById(@NonNull UUID id);
 }
 
