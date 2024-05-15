@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -73,9 +73,9 @@ public class TaskController {
             content = @Content(schema = @Schema(implementation = TaskExampleRequestBody.class))
     )
     @SecurityRequirement(name = "Basic Auth")
-    public ResponseEntity<TaskDTO> create(@RequestBody TaskDTO taskDto, HttpServletRequest request) {
+    public ResponseEntity<TaskDTO> create(@RequestBody @Valid TaskDTO taskDto) {
 
-        var taskCreated = this.taskService.createTask(taskDto, request);
+        var taskCreated = this.taskService.createTask(taskDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);
 
     }
@@ -115,10 +115,9 @@ public class TaskController {
     )
     @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<TaskDTO> findTaskById(
-            @Parameter(description = "The id of the task to find") @PathVariable UUID id,
-            HttpServletRequest request
+            @Parameter(description = "The id of the task to find") @PathVariable UUID id
     ) {
-        var task = this.taskService.findTaskById(id, request);
+        var task = this.taskService.findTaskById(id);
         return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 
@@ -152,8 +151,8 @@ public class TaskController {
             }
     )
     @SecurityRequirement(name = "Basic Auth")
-    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request){
-        return taskService.getTaskSpecificUser(request);
+    public List<TaskDTO> getTaskSpecificUser(@PathVariable UUID idUser){
+        return taskService.getTaskSpecificUser(idUser);
     }
 
 
@@ -200,13 +199,13 @@ public class TaskController {
     )
     @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<TaskDTO> update(
-            @RequestBody TaskDTO dataTask, HttpServletRequest request,
+            @RequestBody TaskDTO dataTask,
             @Parameter(description = "The id of the task to update") @PathVariable UUID id
     ){
-        var taskUpdated = this.taskService.updateTask(dataTask, request, id);
-        return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
+        var taskUpdated = this.taskService.updateTask(dataTask, id);
+        return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);
     }
-    
+
     @DeleteMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Delete a task",
@@ -233,8 +232,8 @@ public class TaskController {
             }
     )
     @SecurityRequirement(name = "Basic Auth")
-    public ResponseEntity<?> delete(HttpServletRequest request, @Parameter(description = "The id of the task to delete") @PathVariable UUID id){
-        this.taskService.deleteTask(id, request);
+    public ResponseEntity<?> delete(@Parameter(description = "The id of the task to delete") @PathVariable UUID id){
+        this.taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
 

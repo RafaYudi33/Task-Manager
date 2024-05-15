@@ -1,14 +1,17 @@
 package br.com.rafaelyudi.todoList.User;
 
 
-import br.com.rafaelyudi.todoList.Errors.NotFoundException;
-import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
+import br.com.rafaelyudi.todoList.Errors.ForbiddenException;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
+import br.com.rafaelyudi.todoList.Security.TokenService;
 import br.com.rafaelyudi.todoList.Task.TaskController;
 import br.com.rafaelyudi.todoList.Utils.Utils;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -23,41 +26,45 @@ public class UserService {
      private IUserRepository userRepository;
 
      @Autowired 
-     private Utils utils; 
-     
+     private Utils utils;
+
+     @Autowired
+     private AuthenticationManager authenticationManager;
+
+     @Autowired
+     PasswordEncoder passwordEncoder;
+
+     @Autowired
+     TokenService tokenService;
 
      public UserDTO userCreate(UserDTO data) {
-
           var verifyUserAlreadyExists = this.userRepository.findByUsername(data.getUsername());
 
           if (verifyUserAlreadyExists != null) {
                throw new UserAlreadyExistsException("Esse nome de usuário ja existe!");
           }
-
-          var passCrypt = utils.passCript(data.getPassword());
+          var passEncode = this.passwordEncoder.encode(data.getPassword());
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
-          userModel.setPassword(passCrypt);
-          
-          
+          userModel.setPassword(passEncode);
           var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);
-          userDto.add(linkTo(methodOn(TaskController.class).create(null, null)).withRel("Criar sua primeira tarefa").withType("POST"));
+          userDto.add(linkTo(methodOn(TaskController.class).create(null)).withRel("Criar sua primeira tarefa").withType("POST"));
           
           return userDto;
      }
 
-     public void delete(UUID id, HttpServletRequest request){
-          var userModel = this.userRepository.findById(id).orElseThrow(()->new NotFoundException("Usuário não encontrado!"));
-          var idUser = request.getAttribute("idUser");
-          if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
-          this.userRepository.delete(userModel);
+     public void delete(UUID id){
+          this.userRepository.deleteById(id);
      }
 
-     public UserDTO login(HttpServletRequest request){
-          var idUser =  request.getAttribute("idUser");
+     public LoginResponseDTO login(@Valid UserCredentialsDTO credentials){
 
-          if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
-          var userModel = this.userRepository.findById((UUID) idUser);
-          return ModelMapperConverter.parseObject(userModel, UserDTO.class);
+          try {
+               var userPassAuth = new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password());
+               var auth = this.authenticationManager.authenticate(userPassAuth);
+               var token = this.tokenService.generateToken((UserModel)auth.getPrincipal());
+               return new LoginResponseDTO(token, this.userRepository.findByUsername(credentials.username()).getId());
+          }catch (Exception exception){
+               throw new ForbiddenException();
+          }
      }
-
 }

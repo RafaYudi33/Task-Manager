@@ -3,6 +3,7 @@ package br.com.rafaelyudi.todoList.Task;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +24,9 @@ public class TaskDTO extends RepresentationModel<TaskDTO>{
     private String priority; 
     private LocalDateTime startAt;
     private LocalDateTime endAt;   
-    private UUID idUser; 
+
+    @NotNull
+    private UUID idUser;
     private LocalDateTime createdAt; 
 
 
@@ -41,7 +44,7 @@ public class TaskDTO extends RepresentationModel<TaskDTO>{
         this.createdAt = createdAt;
     }
 
-  
+
     public UUID getKey() {
         return this.key;
     }
@@ -106,7 +109,7 @@ public class TaskDTO extends RepresentationModel<TaskDTO>{
         this.createdAt = createdAt;
     }
 
- 
+
 
     @Override
     public boolean equals(Object o) {
@@ -123,8 +126,8 @@ public class TaskDTO extends RepresentationModel<TaskDTO>{
     public int hashCode() {
         return Objects.hash(key, description, title, priority, startAt, endAt, idUser, createdAt);
     }
-    
-    
-} 
+
+
+}
     
 

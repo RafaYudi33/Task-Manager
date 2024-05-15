@@ -140,10 +140,7 @@ public class UserController {
     @SecurityRequirement(name = "Basic Auth")
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody @Valid UserCredentialsDTO credentials) {
-
-        this.userService.login(credentials);
-
-        return  ResponseEntity.ok().build();
+        return  ResponseEntity.ok().body(this.userService.login(credentials));
     }
 }
 

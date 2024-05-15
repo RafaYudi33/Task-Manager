@@ -35,9 +35,16 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
     }
 
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(UnauthorizedException.class)
-    public final CustomResponseError handleUnauthorizedException(UnauthorizedException e, WebRequest request){
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ForbiddenException.class)
+    public final CustomResponseError handleForbiddenException(ForbiddenException e, WebRequest request){
+        return new CustomResponseError(e.getMessage(), LocalDateTime.now(), request.getDescription(false));
+
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(TokenIsInvalidException.class)
+    public final CustomResponseError handleTokenIsInvalidException(ForbiddenException e, WebRequest request){
         return new CustomResponseError(e.getMessage(), LocalDateTime.now(), request.getDescription(false));
 
     }

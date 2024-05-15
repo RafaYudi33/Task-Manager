@@ -2,6 +2,8 @@ package br.com.rafaelyudi.todoList.Config;
 
 
 import br.com.rafaelyudi.todoList.Security.Role;
+import br.com.rafaelyudi.todoList.Security.SecurityFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,10 +16,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.logging.Filter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig{
+
+    @Autowired
+    SecurityFilter securityFilter;
 
     @Bean
     PasswordEncoder passwordEncoder(){
@@ -32,16 +40,19 @@ public class SecurityConfig{
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+
+
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests( authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/users/v1/").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/v1/register").permitAll()
                         .requestMatchers("/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/users/v1/login").permitAll().anyRequest().hasRole("USER")
 
                 )
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(cors -> {})
                 .build();
     }
