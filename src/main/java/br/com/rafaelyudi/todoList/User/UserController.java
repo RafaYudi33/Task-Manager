@@ -105,7 +105,7 @@ public class UserController {
     )
     @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<?> deleteUser(@Parameter(description = "The id of the task to delete") @PathVariable(value = "id") UUID id, HttpServletRequest request){
-        this.userService.delete(id);
+        this.userService.delete(request);
         return ResponseEntity.noContent().build();
     }
 

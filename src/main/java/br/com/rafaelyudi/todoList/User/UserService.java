@@ -7,6 +7,7 @@ import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Security.TokenService;
 import br.com.rafaelyudi.todoList.Task.TaskController;
 import br.com.rafaelyudi.todoList.Utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,13 +48,12 @@ public class UserService {
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
           userModel.setPassword(passEncode);
           var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);
-          userDto.add(linkTo(methodOn(TaskController.class).create(null)).withRel("Criar sua primeira tarefa").withType("POST"));
-          
+          userDto.add(linkTo(methodOn(UserController.class).login(null)).withRel("Fazer login").withType("POST"));
           return userDto;
      }
 
-     public void delete(UUID id){
-          this.userRepository.deleteById(id);
+     public void delete(HttpServletRequest request){
+          this.userRepository.deleteById((UUID)request.getAttribute("idUser"));
      }
 
      public LoginResponseDTO login(@Valid UserCredentialsDTO credentials){
