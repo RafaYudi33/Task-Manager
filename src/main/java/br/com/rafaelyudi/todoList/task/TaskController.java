@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,9 +74,9 @@ public class TaskController {
             content = @Content(schema = @Schema(implementation = TaskExampleRequestBody.class))
     )
     @SecurityRequirement(name = "Basic Auth")
-    public ResponseEntity<TaskDTO> create(@RequestBody @Valid TaskDTO taskDto) {
+    public ResponseEntity<TaskDTO> create(@RequestBody @Valid TaskDTO taskDto, HttpServletRequest request) {
 
-        var taskCreated = this.taskService.createTask(taskDto);
+        var taskCreated = this.taskService.createTask(taskDto, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);
 
     }
@@ -122,7 +123,7 @@ public class TaskController {
     }
 
 
-    @GetMapping( produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(value = "/userTasks/{idUser}",produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Find tasks",
             description = "Finds all of a user's tasks",
@@ -200,9 +201,10 @@ public class TaskController {
     @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<TaskDTO> update(
             @RequestBody TaskDTO dataTask,
-            @Parameter(description = "The id of the task to update") @PathVariable UUID id
+            @Parameter(description = "The id of the task to update") @PathVariable UUID id,
+            HttpServletRequest request
     ){
-        var taskUpdated = this.taskService.updateTask(dataTask, id);
+        var taskUpdated = this.taskService.updateTask(dataTask, id, request);
         return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);
     }
 
