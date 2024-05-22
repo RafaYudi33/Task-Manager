@@ -1,5 +1,6 @@
-package br.com.rafaelyudi.todoList.Errors;
+package br.com.rafaelyudi.todoList.Handle;
 
+import br.com.rafaelyudi.todoList.Errors.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +18,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public final CustomResponseError handleGenericException(Exception e ,WebRequest request){
+    public final CustomResponseError handleGenericException(Exception e , WebRequest request){
         return new CustomResponseError(e.getMessage(),LocalDateTime.now(), request.getDescription(false));
     }
 
@@ -35,16 +36,16 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
     }
 
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(ForbiddenException.class)
-    public final CustomResponseError handleForbiddenException(ForbiddenException e, WebRequest request){
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedException.class)
+    public final CustomResponseError handleUnauthorizedException(UnauthorizedException e, WebRequest request){
         return new CustomResponseError(e.getMessage(), LocalDateTime.now(), request.getDescription(false));
 
     }
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(TokenIsInvalidException.class)
-    public final CustomResponseError handleTokenIsInvalidException(ForbiddenException e, WebRequest request){
+    public final CustomResponseError handleTokenIsInvalidException(UnauthorizedException e, WebRequest request){
         return new CustomResponseError(e.getMessage(), LocalDateTime.now(), request.getDescription(false));
 
     }
