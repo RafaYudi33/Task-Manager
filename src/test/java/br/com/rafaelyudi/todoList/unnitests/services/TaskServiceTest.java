@@ -1,19 +1,12 @@
 package br.com.rafaelyudi.todoList.unnitests.services;
 
 
-import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
-import br.com.rafaelyudi.todoList.Errors.NotFoundException;
-import br.com.rafaelyudi.todoList.Errors.ForbiddenException;
 import br.com.rafaelyudi.todoList.Task.ITaskRepository;
-import br.com.rafaelyudi.todoList.Task.TaskDTO;
-import br.com.rafaelyudi.todoList.Task.TaskModel;
 import br.com.rafaelyudi.todoList.Task.TaskService;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import br.com.rafaelyudi.todoList.unnitests.mocks.MockTask;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,12 +15,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

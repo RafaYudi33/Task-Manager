@@ -12,7 +12,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
-import br.com.rafaelyudi.todoList.Errors.ForbiddenException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,12 +53,15 @@ public class TaskService {
 
     }
 
-    public TaskDTO createTask(TaskDTO data) {
-
+    public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
 
         dateValidation(data);
         TaskModel task = ModelMapperConverter.parseObject(data, TaskModel.class);
+
+        var idUser = request.getAttribute("idUser");
+        task.setIdUser((UUID)idUser);
         saveTask(task);
+
         var taskDto = ModelMapperConverter.parseObject(task, TaskDTO.class);
         taskDto.add(linkTo(methodOn(TaskController.class).findTaskById(taskDto.getKey())).withSelfRel()
                 .withType("GET"));
@@ -67,10 +69,13 @@ public class TaskService {
         return taskDto;
     }
 
-    public TaskDTO updateTask(TaskDTO dataTask, UUID id) {
+    public TaskDTO updateTask(TaskDTO dataTask, UUID id, HttpServletRequest request) {
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
 
         var taskUpdated = utils.copyPartialProp(dataTask, task);
+        var idUser = request.getAttribute("idUser");
+        taskUpdated.setIdUser((UUID)idUser);
+
         var taskDTO = ModelMapperConverter.parseObject(taskUpdated, TaskDTO.class);
         dateValidation(taskDTO);
         saveTask(task);
@@ -91,11 +96,11 @@ public class TaskService {
         /* HATEOAS */
         taskDto.add(linkTo(methodOn(TaskController.class).getTaskSpecificUser(taskDto.getIdUser()))
                 .withRel("Listar todas as tarefas do mesmo usuário").withType("GET"));
-        taskDto.add(linkTo(methodOn(TaskController.class).create(taskDto)).withRel("Criar outra tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).create(taskDto, null)).withRel("Criar outra tarefa")
                 .withType("POST"));
         taskDto.add(linkTo(methodOn(TaskController.class).delete(id)).withRel("Deletar esta tarefa")
                 .withType("DELETE"));
-        taskDto.add(linkTo(methodOn(TaskController.class).update(taskDto, id)).withRel("Modificar esta tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).update(taskDto, id, null)).withRel("Modificar esta tarefa")
                 .withType("PUT"));
 
         return taskDto;

@@ -1,20 +1,22 @@
 package br.com.rafaelyudi.todoList.User;
 
 
-import br.com.rafaelyudi.todoList.Errors.ForbiddenException;
+import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Security.TokenService;
-import br.com.rafaelyudi.todoList.Task.TaskController;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -23,6 +25,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Service
 public class UserService {
 
+     @Value("${security.jwt.expirationInMillisecond}")
+     private long expirationInMillisecond;
      @Autowired
      private IUserRepository userRepository;
 
@@ -62,9 +66,11 @@ public class UserService {
                var userPassAuth = new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password());
                var auth = this.authenticationManager.authenticate(userPassAuth);
                var token = this.tokenService.generateToken((UserModel)auth.getPrincipal());
-               return new LoginResponseDTO(token, this.userRepository.findByUsername(credentials.username()).getId());
+               System.out.println(expirationInMillisecond);
+               System.out.println(LocalDateTime.now().toString());
+               return new LoginResponseDTO(token, LocalDateTime.now().plus(expirationInMillisecond, ChronoUnit.MILLIS));
           }catch (Exception exception){
-               throw new ForbiddenException();
+               throw new UnauthorizedException("Usuário e/ou senha incorretos!");
           }
      }
 }

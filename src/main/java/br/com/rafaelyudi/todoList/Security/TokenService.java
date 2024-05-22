@@ -18,6 +18,9 @@ public class TokenService {
     @Value("${security.jwt.secretKey}")
     private String secretKey;
 
+    @Value("${security.jwt.expirationInMillisecond}")
+    private long expirationInMillisecond;
+
     public String generateToken(UserModel user){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
@@ -25,7 +28,7 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("Task-Manager")
                     .withSubject(user.getUsername())
-                    .withExpiresAt(Instant.now().plusSeconds(1800))
+                    .withExpiresAt(Instant.now().plusSeconds(expirationInMillisecond))
                     .sign(algorithm);
 
         }catch (JWTCreationException e){
