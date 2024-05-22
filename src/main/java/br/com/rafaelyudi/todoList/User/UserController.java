@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users/v1/")
+@RequestMapping("/users/v1")
 @Tag(name = "User", description = "Endpoints to managing users")
 @SecurityScheme(name = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class UserController {
@@ -78,7 +78,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping(value = "{id}")
+    @DeleteMapping("/")
     @Operation(
             summary = "Delete a user",
             tags = "User",
@@ -104,7 +104,7 @@ public class UserController {
             }
     )
     @SecurityRequirement(name = "Basic Auth")
-    public ResponseEntity<?> deleteUser(@Parameter(description = "The id of the task to delete") @PathVariable(value = "id") UUID id, HttpServletRequest request){
+    public ResponseEntity<?> deleteUser(HttpServletRequest request){
         this.userService.delete(request);
         return ResponseEntity.noContent().build();
     }
@@ -115,8 +115,8 @@ public class UserController {
             tags = "User",
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)),
-                            @Content(mediaType = "application/xml", schema = @Schema(implementation = UserDTO.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class)),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = LoginResponseDTO.class))
                     }),
 
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = {
@@ -138,7 +138,7 @@ public class UserController {
             }
     )
     @SecurityRequirement(name = "Basic Auth")
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserCredentialsDTO credentials) {
         return  ResponseEntity.ok().body(this.userService.login(credentials));
     }
