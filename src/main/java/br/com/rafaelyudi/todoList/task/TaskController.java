@@ -27,7 +27,7 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/tasks/v1/")
+@RequestMapping("/tasks/v1")
 @Tag(name = "Task" , description = "Endpoints to managing tasks")
 @SecurityScheme(name = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class TaskController {
@@ -81,7 +81,7 @@ public class TaskController {
 
     }
     
-    @GetMapping(value = "{id}", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(value = "/{id}", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Find a task",
             description = "Find a task by your id",
@@ -123,7 +123,7 @@ public class TaskController {
     }
 
 
-    @GetMapping(value = "/userTasks/{idUser}",produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(value = "/userTasks",produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Find tasks",
             description = "Finds all of a user's tasks",
@@ -152,8 +152,8 @@ public class TaskController {
             }
     )
     @SecurityRequirement(name = "Basic Auth")
-    public List<TaskDTO> getTaskSpecificUser(@PathVariable UUID idUser){
-        return taskService.getTaskSpecificUser(idUser);
+    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request){
+        return taskService.getTaskSpecificUser(request);
     }
 
 
