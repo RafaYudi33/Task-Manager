@@ -25,12 +25,6 @@ public class TaskService {
     @Autowired
     private Utils utils;
 
-    public List<TaskModel> findTasksCloseEnd() {
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime oneDayForEnd = currentDate.plusDays(1);
-
-        return this.taskRepository.findByEndAtBetween(currentDate, oneDayForEnd);
-    }
 
     public List<TaskModel> findTasksCloseStart() {
         LocalDateTime currentDate = LocalDateTime.now();
@@ -94,7 +88,7 @@ public class TaskService {
         TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
-        taskDto.add(linkTo(methodOn(TaskController.class).getTaskSpecificUser(taskDto.getIdUser()))
+        taskDto.add(linkTo(methodOn(TaskController.class).getTaskSpecificUser( null))
                 .withRel("Listar todas as tarefas do mesmo usuário").withType("GET"));
         taskDto.add(linkTo(methodOn(TaskController.class).create(taskDto, null)).withRel("Criar outra tarefa")
                 .withType("POST"));
@@ -111,10 +105,10 @@ public class TaskService {
         this.taskRepository.delete(task);
     }
 
-    public List<TaskDTO> getTaskSpecificUser(UUID idUser) {
+    public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request) {
 
-
-        var tasks = taskRepository.findByIdUser(idUser);
+        var idUser = request.getAttribute("idUser");
+        var tasks = taskRepository.findByIdUser((UUID)idUser);
         var tasksDTO = ModelMapperConverter.parseListObject(tasks, TaskDTO.class);
 
         for (TaskDTO t : tasksDTO) {
@@ -124,7 +118,6 @@ public class TaskService {
                 throw new RuntimeException("Erro ao adicionar link!");
             }
         }
-
         return tasksDTO;
     }
 
