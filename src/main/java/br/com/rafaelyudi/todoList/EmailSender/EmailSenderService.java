@@ -21,6 +21,7 @@ public class EmailSenderService {
     @Autowired
     private SesEmailSender sesEmailSender; 
 
+
     @Autowired
     private IUserRepository userRepository;
 
@@ -28,10 +29,7 @@ public class EmailSenderService {
     public void taskEmailSenderService(){
 
         var tasks = this.taskService.findTasksCloseStart();
-
-        
         for(TaskModel task :  tasks){
-
             var userOptional =  this.userRepository.findById(task.getIdUser());
             if (userOptional.isPresent()) {
                 UserModel user = userOptional.get();
