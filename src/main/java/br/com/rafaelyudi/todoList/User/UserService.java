@@ -60,14 +60,12 @@ public class UserService {
           this.userRepository.deleteById((UUID)request.getAttribute("idUser"));
      }
 
-     public LoginResponseDTO login(@Valid UserCredentialsDTO credentials){
+     public LoginResponseDTO login(UserCredentialsDTO credentials){
 
           try {
                var userPassAuth = new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password());
                var auth = this.authenticationManager.authenticate(userPassAuth);
                var token = this.tokenService.generateToken((UserModel)auth.getPrincipal());
-               System.out.println(expirationInMillisecond);
-               System.out.println(LocalDateTime.now().toString());
                return new LoginResponseDTO(token, LocalDateTime.now().plus(expirationInMillisecond, ChronoUnit.MILLIS));
           }catch (Exception exception){
                throw new UnauthorizedException("Usuário e/ou senha incorretos!");
