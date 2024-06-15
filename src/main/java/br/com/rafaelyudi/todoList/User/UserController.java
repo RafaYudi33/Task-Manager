@@ -28,7 +28,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users/v1")
 @Tag(name = "User", description = "Endpoints to managing users")
-@SecurityScheme(name = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -103,7 +102,7 @@ public class UserController {
                     })
             }
     )
-    @SecurityRequirement(name = "Basic Auth")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> deleteUser(HttpServletRequest request){
         this.userService.delete(request);
         return ResponseEntity.noContent().build();
@@ -114,7 +113,7 @@ public class UserController {
             summary = "login a user",
             tags = "User",
             responses = {
-                    @ApiResponse(description = "Success", responseCode = "200", content = {
+                    @ApiResponse(description = "Success" ,responseCode = "200", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = LoginResponseDTO.class))
                     }),
@@ -123,23 +122,14 @@ public class UserController {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
                     }),
-                    @ApiResponse(description = "NotFound", responseCode = "404", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
-                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
-                    }),
                     @ApiResponse(description = "Internal error", responseCode = "500", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
-                            @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
-                    }),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = CustomResponseError.class)),
                             @Content(mediaType = "application/xml", schema = @Schema(implementation = CustomResponseError.class))
                     })
             }
     )
-    @SecurityRequirement(name = "Basic Auth")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserCredentialsDTO credentials) {
+    public ResponseEntity<?> login(@RequestBody UserCredentialsDTO credentials) {
         return  ResponseEntity.ok().body(this.userService.login(credentials));
     }
 }

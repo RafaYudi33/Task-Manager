@@ -1,13 +1,14 @@
 package br.com.rafaelyudi.todoList.IntegrationTests.Controller.User;
 
+import br.com.rafaelyudi.todoList.Config.SecurityConfig;
 import br.com.rafaelyudi.todoList.IntegrationTests.DTOs.UserDTO;
 import br.com.rafaelyudi.todoList.IntegrationTests.testcontainers.AbstractIntegrationTest;
+import br.com.rafaelyudi.todoList.User.LoginResponseDTO;
+import br.com.rafaelyudi.todoList.User.UserCredentialsDTO;
 import br.com.rafaelyudi.todoList.config.ObjectMapperConfig;
 import br.com.rafaelyudi.todoList.config.TestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -15,18 +16,19 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.time.LocalDateTime;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+
 public class UserControllerWithJsonTest extends AbstractIntegrationTest{
 
-    private static final String basePath = "/users/v1/";
     private static ObjectMapper objectMapper;
     private static RequestSpecification specification;
     private static UserDTO user;
+
+    private static String tokenUser;
 
     @BeforeAll
     public static void setUp(){
@@ -38,20 +40,17 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
     @Test
     @Order(1)
     public void createUserTestCase1() throws JsonProcessingException {
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setBasePath(basePath)
-                .setBody(user)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setPort(TestConfig.SERVER_PORT)
-                .build();
 
         var content = given().
-                spec(specification)
+                basePath(TestConfig.basePathUser)
+                .port(TestConfig.SERVER_PORT)
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .contentType(TestConfig.MEDIA_TYPE_JSON)
+                .filter(new RequestLoggingFilter(LogDetail.ALL))
+                .filter(new ResponseLoggingFilter(LogDetail.ALL))
+                .body(user)
                 .when()
-                .post()
+                .post("/register")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -65,25 +64,20 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
         assertEquals("Rafael Yudi", user.getName());
     }
 
-
     @DisplayName("Should returns Invalid Cors Request when domain is not allowed")
     @Test
     @Order(2)
     public void createUserTestCase2(){
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setBasePath(basePath)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setPort(TestConfig.SERVER_PORT)
-                .setBody(user)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
-        var content = given()
-                .spec(specification)
+        var content = given().port(TestConfig.SERVER_PORT)
+                .basePath(TestConfig.basePathUser)
+                .filter(new RequestLoggingFilter(LogDetail.ALL))
+                .filter(new ResponseLoggingFilter(LogDetail.ALL))
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .body(user)
+                .contentType(TestConfig.MEDIA_TYPE_JSON)
                 .when()
-                .post()
+                .post("/register")
                 .then()
                 .statusCode(403)
                 .extract()
@@ -93,27 +87,49 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
         assertEquals("Invalid CORS request", content);
     }
 
-    @DisplayName("Should returns Invalid Cors Request when domain is not allowed")
+    @DisplayName("Should login a user when everything is ok")
     @Test
     @Order(3)
-    public void deleteUserCase1(){
-        var specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setBasePath(basePath)
+    public void loginUserTestCase1(){
+        UserCredentialsDTO credentials = new UserCredentialsDTO("Rafael","1234");
+
+        tokenUser = given()
+                .basePath(TestConfig.basePathUser)
+                .port(TestConfig.SERVER_PORT)
+                .contentType(TestConfig.MEDIA_TYPE_JSON)
+                .filter(new RequestLoggingFilter(LogDetail.ALL))
+                .filter(new ResponseLoggingFilter(LogDetail.ALL))
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .body(credentials)
+                .when()
+                .post("/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(LoginResponseDTO.class).token();
+
+        specification = new RequestSpecBuilder()
+                .setBasePath(TestConfig.basePathUser)
+                .addHeader(TestConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + tokenUser)
                 .setPort(TestConfig.SERVER_PORT)
                 .setContentType(TestConfig.MEDIA_TYPE_JSON)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
+    }
+
+
+    @DisplayName("Should returns Invalid Cors Request when domain is not allowed")
+    @Test
+    @Order(4)
+    public void deleteUserCase1(){
 
         var content = given()
                 .spec(specification)
-                .auth( )
-                    .preemptive()
-                        .basic("Rafael","1234")
-                .pathParam("idUser",user.getId())
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
                 .when()
-                .delete("{idUser}")
+                .delete("/")
                 .then()
                 .extract()
                 .body()
@@ -124,26 +140,14 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
 
     @DisplayName("Should delete user when everything is ok")
     @Test
-    @Order(4)
+    @Order(5)
     public void deleteUserCase2(){
-
-        var specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setPort(TestConfig.SERVER_PORT)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setBasePath(basePath)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-
 
         var responseStatusCode = given()
                 .spec(specification)
-                .auth().preemptive().basic("Rafael","1234")
-                .pathParam("idUser", user.getId())
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
                         .when()
-                                .delete("{idUser}")
+                                .delete("/")
                                         .then()
                                                 .extract()
                                                         .statusCode();
