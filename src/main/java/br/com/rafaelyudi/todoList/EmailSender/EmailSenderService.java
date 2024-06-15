@@ -25,6 +25,7 @@ public class EmailSenderService {
     @Autowired
     private IUserRepository userRepository;
 
+    //@Scheduled(fixedRate = 5000)
     @Scheduled(fixedRate = 3600000)
     public void taskEmailSenderService(){
 
