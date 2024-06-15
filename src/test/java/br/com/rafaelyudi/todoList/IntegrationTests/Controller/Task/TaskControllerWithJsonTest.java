@@ -34,6 +34,7 @@ public class  TaskControllerWithJsonTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
     private static UserDTO user;
 
+
     private static String userToken;
     private static TaskDTO task;
     private static MockUserRequest mockUser;
