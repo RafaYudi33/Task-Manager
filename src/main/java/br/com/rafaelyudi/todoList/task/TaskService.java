@@ -12,7 +12,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import br.com.rafaelyudi.todoList.Errors.InvalidDateException;
 import br.com.rafaelyudi.todoList.Errors.NotFoundException;
-import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,12 +25,6 @@ public class TaskService {
     @Autowired
     private Utils utils;
 
-    public List<TaskModel> findTasksCloseEnd() {
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime oneDayForEnd = currentDate.plusDays(1);
-
-        return this.taskRepository.findByEndAtBetween(currentDate, oneDayForEnd);
-    }
 
     public List<TaskModel> findTasksCloseStart() {
         LocalDateTime currentDate = LocalDateTime.now();
@@ -57,81 +50,74 @@ public class TaskService {
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
 
         dateValidation(data);
-        var idUser = request.getAttribute("idUser");
-        if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
         TaskModel task = ModelMapperConverter.parseObject(data, TaskModel.class);
-        task.setIdUser((UUID) idUser);
+
+        var idUser = request.getAttribute("idUser");
+        task.setIdUser((UUID)idUser);
         saveTask(task);
+
         var taskDto = ModelMapperConverter.parseObject(task, TaskDTO.class);
-        taskDto.add(linkTo(methodOn(TaskController.class).findTaskById(taskDto.getKey(), request)).withSelfRel()
+        taskDto.add(linkTo(methodOn(TaskController.class).findTaskById(taskDto.getKey())).withSelfRel()
                 .withType("GET"));
 
         return taskDto;
-        
     }
 
-    public TaskDTO updateTask(TaskDTO dataTask, HttpServletRequest request, @NonNull UUID id) {
+    public TaskDTO updateTask(TaskDTO dataTask, UUID id, HttpServletRequest request) {
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
-        var idUser = request.getAttribute("idUser");
 
-
-
-        if(!utils.verifyAuthorization(idUser, task.getIdUser())) throw new UnauthorizedException();
         var taskUpdated = utils.copyPartialProp(dataTask, task);
+        var idUser = request.getAttribute("idUser");
+        taskUpdated.setIdUser((UUID)idUser);
+
         var taskDTO = ModelMapperConverter.parseObject(taskUpdated, TaskDTO.class);
         dateValidation(taskDTO);
         saveTask(task);
 
-        taskDTO.add(linkTo(methodOn(TaskController.class).findTaskById(id, request)).withSelfRel().withType("GET"));
+        taskDTO.add(linkTo(methodOn(TaskController.class).findTaskById(id)).withSelfRel().withType("GET"));
 
 
         return taskDTO;
 
     }
 
-    public TaskDTO findTaskById(UUID id, HttpServletRequest request) {
+    public TaskDTO findTaskById(UUID id) {
 
         TaskModel taskModel = this.taskRepository.findById(id).orElseThrow(()-> new NotFoundException("Tarefa não encontrada!"));
-        var idUser = request.getAttribute("idUser");
-        if(!utils.verifyAuthorization(idUser, taskModel.getIdUser())) throw new UnauthorizedException();
+
         TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
 
         /* HATEOAS */
-        taskDto.add(linkTo(methodOn(TaskController.class).getTaskSpecificUser(request))
+        taskDto.add(linkTo(methodOn(TaskController.class).getTaskSpecificUser( null))
                 .withRel("Listar todas as tarefas do mesmo usuário").withType("GET"));
-        taskDto.add(linkTo(methodOn(TaskController.class).create(taskDto, request)).withRel("Criar outra tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).create(taskDto, null)).withRel("Criar outra tarefa")
                 .withType("POST"));
-        taskDto.add(linkTo(methodOn(TaskController.class).delete(request, id)).withRel("Deletar esta tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).delete(id)).withRel("Deletar esta tarefa")
                 .withType("DELETE"));
-        taskDto.add(linkTo(methodOn(TaskController.class).update(taskDto, request, id)).withRel("Modificar esta tarefa")
+        taskDto.add(linkTo(methodOn(TaskController.class).update(taskDto, id, null)).withRel("Modificar esta tarefa")
                 .withType("PUT"));
 
         return taskDto;
     }
 
-    public void deleteTask(@NonNull UUID id, HttpServletRequest request) {
+    public void deleteTask(@NonNull UUID id) {
         var task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
-        var idUser = request.getAttribute("idUser");
-
-        if(!utils.verifyAuthorization(idUser, task.getIdUser())) throw new UnauthorizedException();
         this.taskRepository.delete(task);
     }
 
     public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request) {
 
         var idUser = request.getAttribute("idUser");
-        if(!utils.verifyAuthorization(idUser)) throw new UnauthorizedException();
-        var tasks = taskRepository.findByIdUser((UUID) idUser);
+        var tasks = taskRepository.findByIdUser((UUID)idUser);
         var tasksDTO = ModelMapperConverter.parseListObject(tasks, TaskDTO.class);
 
         for (TaskDTO t : tasksDTO) {
             try {
-                t.add(linkTo(methodOn(TaskController.class).findTaskById(t.getKey(), request)).withSelfRel());
+                t.add(linkTo(methodOn(TaskController.class).findTaskById(t.getKey())).withSelfRel());
             } catch (Exception e) {
                 throw new RuntimeException("Erro ao adicionar link!");
             }
         }
-
         return tasksDTO;
     }
 

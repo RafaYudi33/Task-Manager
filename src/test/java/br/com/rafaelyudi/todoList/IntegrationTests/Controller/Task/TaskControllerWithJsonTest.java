@@ -28,12 +28,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
-public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
+public class  TaskControllerWithJsonTest extends AbstractIntegrationTest {
 
-    private static final String basePath = "/tasks/v1/";
     private static ObjectMapper objectMapper;
     private static RequestSpecification specification;
     private static UserDTO user;
+
+
+    private static String userToken;
     private static TaskDTO task;
     private static MockUserRequest mockUser;
 
@@ -58,11 +60,13 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @Order(1)
     public void createTaskTestCase1() throws JsonProcessingException {
         user = mockUser.mockPostUser(objectMapper);
+        userToken = mockUser.mockUserLogin(user);
+
         specification = new RequestSpecBuilder()
                 .setPort(TestConfig.SERVER_PORT)
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .setBasePath(TestConfig.basePathTask)
+                .addHeader(TestConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + userToken)
                 .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setBasePath(basePath)
                 .setBody(task)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
@@ -70,9 +74,9 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
 
         var content = given()
                 .spec(specification)
-                .auth().preemptive().basic(user.getUsername(), user.getPassword())
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
                 .when()
-                .post()
+                .post("/")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -97,21 +101,12 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @Test
     @Order(2)
     public void createTaskTestCase2(){
-        specification = new RequestSpecBuilder()
-                .setPort(TestConfig.SERVER_PORT)
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setBasePath(basePath)
-                .setBody(task)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         var content = given()
                 .spec(specification)
-                .auth().preemptive().basic(user.getUsername(), user.getPassword())
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
                 .when()
-                .post()
+                .post("/")
                 .then()
                 .statusCode(403)
                 .extract()
@@ -126,21 +121,13 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @Test
     @Order(3)
     public void findTaskByIdTestCase1() throws JsonProcessingException {
-        specification = new RequestSpecBuilder()
-                .setPort(TestConfig.SERVER_PORT)
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setBasePath(basePath)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         var content = given()
                 .spec(specification)
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
                 .pathParam("idTask", task.getId())
-                .auth().preemptive().basic(user.getUsername(), user.getPassword())
                 .when()
-                .get("{idTask}")
+                .get("/{idTask}")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -164,21 +151,13 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @Test
     @Order(4)
     public void findTaskByIdTestCase2(){
-        specification = new RequestSpecBuilder()
-                .setPort(TestConfig.SERVER_PORT)
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setBasePath(basePath)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         var content = given()
                 .spec(specification)
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
                 .pathParam("idTask", task.getId())
-                .auth().preemptive().basic(user.getUsername(), user.getPassword())
                 .when()
-                .get("{idTask}")
+                .get("/{idTask}")
                 .then()
                 .statusCode(403)
                 .extract()
@@ -197,22 +176,13 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
         contentToUpdate.setPriority("Baixa");
         contentToUpdate.setTitle("Título atualizado");
 
-        specification = new RequestSpecBuilder()
-                .setPort(TestConfig.SERVER_PORT)
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setBasePath(basePath)
-                .setBody(contentToUpdate)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
         var content = given()
                 .spec(specification)
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .body(contentToUpdate)
                 .pathParam("idTask", task.getId())
-                .auth().preemptive().basic(user.getUsername(), user.getPassword())
                 .when()
-                .put("{idTask}")
+                .put("/{idTask}")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -239,22 +209,13 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
         contentToUpdate.setPriority("Baixa");
         contentToUpdate.setTitle("Título atualizado");
 
-        specification = new RequestSpecBuilder()
-                .setPort(TestConfig.SERVER_PORT)
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .setBasePath(basePath)
-                .setBody(contentToUpdate)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
         var content = given()
                 .spec(specification)
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .body(contentToUpdate)
                 .pathParam("idTask", task.getId())
-                .auth().preemptive().basic(user.getUsername(), user.getPassword())
                 .when()
-                .put("{idTask}")
+                .put("/{idTask}")
                 .then()
                 .statusCode(403)
                 .extract()
@@ -265,27 +226,17 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     }
 
 
-
-
     @DisplayName("Should delete a task when everything is ok!")
     @Test
     @Order(7)
     public void deleteTaskTestCase1() {
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setPort(TestConfig.SERVER_PORT)
-                .setBasePath(basePath)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         given()
                 .spec(specification)
                 .pathParam("taskId", task.getId())
-                .auth().preemptive().basic(user.getUsername(),user.getPassword())
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
                 .when()
-                .delete("{taskId}")
+                .delete("/{taskId}")
                 .then()
                 .statusCode(204);
     }
@@ -294,21 +245,13 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @Test
     @Order(8)
     public void deleteTaskTestCase2() {
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setPort(TestConfig.SERVER_PORT)
-                .setBasePath(basePath)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         var content = given()
                 .spec(specification)
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
                 .pathParam("taskId", task.getId())
-                .auth().preemptive().basic(user.getUsername(),user.getPassword())
                 .when()
-                .delete("{taskId}")
+                .delete("/{taskId}")
                 .then()
                 .statusCode(403)
                 .extract()
@@ -325,22 +268,13 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @Order(9)
     public void getTaskSpecificUserTestCase1() throws JsonProcessingException {
 
-        var mockTasks = mockTask.mockPostListTasks(4,  user);
-
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
-                .setPort(TestConfig.SERVER_PORT)
-                .setBasePath(basePath)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+        var mockTasks = mockTask.mockPostListTasks(4,  user, userToken ,objectMapper);
 
         var content = given()
                 .spec(specification)
-                .auth().preemptive().basic(user.getUsername(),user.getPassword())
                 .when()
-                .get()
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.ALLOWED_DOMAIN)
+                .get("/userTasks")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -360,20 +294,12 @@ public class TaskControllerWithJsonTest extends AbstractIntegrationTest {
     @Test
     @Order(10)
     public void getTaskSpecificUserTestCase2() {
-        specification = new RequestSpecBuilder()
-                .addHeader(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
-                .setPort(TestConfig.SERVER_PORT)
-                .setBasePath(basePath)
-                .setContentType(TestConfig.MEDIA_TYPE_JSON)
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         var content = given()
                 .spec(specification)
-                .auth().preemptive().basic(user.getUsername(),user.getPassword())
                 .when()
-                .get()
+                .header(TestConfig.HEADER_PARAM_ORIGIN, TestConfig.NOT_ALLOWED_DOMAIN)
+                .get("/userTasks")
                 .then()
                 .statusCode(403)
                 .extract()

@@ -21,17 +21,16 @@ public class EmailSenderService {
     @Autowired
     private SesEmailSender sesEmailSender; 
 
+
     @Autowired
     private IUserRepository userRepository;
 
+    //@Scheduled(fixedRate = 5000)
     @Scheduled(fixedRate = 3600000)
     public void taskEmailSenderService(){
 
         var tasks = this.taskService.findTasksCloseStart();
-
-        
         for(TaskModel task :  tasks){
-
             var userOptional =  this.userRepository.findById(task.getIdUser());
             if (userOptional.isPresent()) {
                 UserModel user = userOptional.get();

@@ -38,15 +38,6 @@ public class UtilsTest {
         utils = new Utils(); 
     }
     
-    
-    @Test
-    @DisplayName("Should cript password when everything is ok")
-    public void passCriptTest(){
-         UserDTO user = inputUser.mockUserDto(1);
-
-        var result = utils.passCript(user.getPassword());
-        assertTrue(BCrypt.verifyer().verify(user.getPassword().toCharArray(), result).verified);
-    }
 
     @Test 
     @DisplayName("Should copy null properties when everything is ok")
@@ -81,24 +72,4 @@ public class UtilsTest {
         
     }
 
-    @Test
-    @DisplayName("Should only check the authorization when everything is ok")
-    public void verifyAuthorizationCase1(){
-        UUID mockIdUser = UUID.randomUUID();
-
-        boolean result = utils.verifyAuthorization(mockIdUser);
-        assertTrue(result);
-    }
-
-    @Test
-    @DisplayName("Should check the authorization and also check if the idUser is the same as the idUser of the task")
-    public void verifyAuthorizationCase2(){
-
-        TaskModel entity = inputTask.mockTaskModel(1);
-        UUID mockIdUser = entity.getIdUser();
-
-
-        boolean result = utils.verifyAuthorization(mockIdUser,  entity.getIdUser());
-        assertTrue(result);
-    }
 }

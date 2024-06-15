@@ -11,9 +11,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,16 +28,16 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/tasks/v1/")
+@RequestMapping("/tasks/v1")
 @Tag(name = "Task" , description = "Endpoints to managing tasks")
-@SecurityScheme(name = "Basic Auth", type = SecuritySchemeType.HTTP, scheme = "basic")
+@SecurityRequirement(name = "Bearer Authentication")
 public class TaskController {
     
 
     @Autowired
     private TaskService taskService;
 
-    @PostMapping( consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    @PostMapping(value = "/", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Create a task",
@@ -72,15 +74,14 @@ public class TaskController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(schema = @Schema(implementation = TaskExampleRequestBody.class))
     )
-    @SecurityRequirement(name = "Basic Auth")
-    public ResponseEntity<TaskDTO> create(@RequestBody TaskDTO taskDto, HttpServletRequest request) {
+    public ResponseEntity<TaskDTO> create(@RequestBody @Valid TaskDTO taskDto, HttpServletRequest request) {
 
         var taskCreated = this.taskService.createTask(taskDto, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);
 
     }
     
-    @GetMapping(value = "{id}", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(value = "/{id}", produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Find a task",
             description = "Find a task by your id",
@@ -113,17 +114,15 @@ public class TaskController {
                     )
             }
     )
-    @SecurityRequirement(name = "Basic Auth")
     public ResponseEntity<TaskDTO> findTaskById(
-            @Parameter(description = "The id of the task to find") @PathVariable UUID id,
-            HttpServletRequest request
+            @Parameter(description = "The id of the task to find") @PathVariable UUID id
     ) {
-        var task = this.taskService.findTaskById(id, request);
+        var task = this.taskService.findTaskById(id);
         return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 
 
-    @GetMapping( produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(value = "/userTasks",produces =  {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Find tasks",
             description = "Finds all of a user's tasks",
@@ -157,7 +156,7 @@ public class TaskController {
     }
 
 
-    @PutMapping(value = "{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
                 produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 
     @Operation(
@@ -198,16 +197,17 @@ public class TaskController {
 
             }
     )
-    @SecurityRequirement(name = "Basic Auth")
+
     public ResponseEntity<TaskDTO> update(
-            @RequestBody TaskDTO dataTask, HttpServletRequest request,
-            @Parameter(description = "The id of the task to update") @PathVariable UUID id
+            @RequestBody TaskDTO dataTask,
+            @Parameter(description = "The id of the task to update") @PathVariable UUID id,
+            HttpServletRequest request
     ){
-        var taskUpdated = this.taskService.updateTask(dataTask, request, id);
-        return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);  
+        var taskUpdated = this.taskService.updateTask(dataTask, id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(taskUpdated);
     }
-    
-    @DeleteMapping(value = "{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+
+    @DeleteMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(
             summary = "Delete a task",
             tags = "Task",
@@ -232,9 +232,9 @@ public class TaskController {
                     })
             }
     )
-    @SecurityRequirement(name = "Basic Auth")
-    public ResponseEntity<?> delete(HttpServletRequest request, @Parameter(description = "The id of the task to delete") @PathVariable UUID id){
-        this.taskService.deleteTask(id, request);
+
+    public ResponseEntity<?> delete(@Parameter(description = "The id of the task to delete") @PathVariable UUID id){
+        this.taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
 

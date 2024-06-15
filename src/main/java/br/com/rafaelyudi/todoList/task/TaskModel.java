@@ -3,12 +3,12 @@ package br.com.rafaelyudi.todoList.Task;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import br.com.rafaelyudi.todoList.User.UserModel;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Objects;
@@ -26,13 +26,15 @@ public class TaskModel {
     private String title; 
     private String priority; 
     private LocalDateTime startAt;
-    private LocalDateTime endAt;   
-    private UUID idUser; 
+    private LocalDateTime endAt;
+
+    @NotBlank
+    @Column(nullable = false)
+    private UUID idUser;
+
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime createdAt; 
-
-
+    private LocalDateTime createdAt;
 
     public TaskModel() {
     }
