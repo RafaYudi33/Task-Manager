@@ -72,8 +72,9 @@ mvn spring-boot:run
 
   | Endpoint             | Description                                         
   |----------------------|-----------------------------------------------------
-  | <kbd>POST /users/v1/</kbd>     | <kbd>Create a user by passing in JSON or XML</kbd>
+  | <kbd>POST /users/v1/register</kbd>     | <kbd>Register a user by passing in JSON or XML</kbd>
   | <kbd>DELETE /users/v1/id</kbd> | <kbd>Delete a user by passing user ID </kbd>
+  | <kbd>DELETE /users/v1/login</kbd> | <kbd>Login a user by passing your credentials </kbd>
 
 </div>
 
