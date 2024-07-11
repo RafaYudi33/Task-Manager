@@ -7,7 +7,7 @@ aws:
     secretKey: ${AWS_SECRET_KEY}
 security:
   jwt:
-    secretKey: "rafs3452"
+    secretKey: ${secretKey}
     expirationInMillisecond: 1800000
 spring:
   datasource:
