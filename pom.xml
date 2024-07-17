@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.rafaelyudi</groupId>
-	<artifactId>todoList</artifactId>
+	<artifactId>TaskManager</artifactId>
 	<version>1.0.0</version>
 	<name>todoList</name>
 	<description>Task Manager</description>
