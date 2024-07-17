@@ -44,11 +44,12 @@ git clone your-project-url-in-github
 
 ### Environment Variables
 
-Before running the application, make sure to set up the necessary environment variables. Use the provided `application.properties.example` file as a reference to create your configuration file named `application.properties` with your AWS credentials.
+Before running the application, make sure to set up the necessary environment variables. Use the provided `application.properties.example` file as a reference to create your configuration file named `application.properties` with your AWS credentials and your secret key(JWT).
 
 ```yaml
 aws.credentials.accessKey= ${YOUR_AWS_ACESS_KEY}
 aws.credentials.secretKey= ${YOUR_AWS_SECRET_KEY}
+security.jwt.secretKey= ${YOUR_SECRET_KEY}
 ```
 
 ### Database
