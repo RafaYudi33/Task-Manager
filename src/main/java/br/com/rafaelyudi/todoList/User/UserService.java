@@ -4,6 +4,7 @@ package br.com.rafaelyudi.todoList.User;
 import br.com.rafaelyudi.todoList.Errors.UnauthorizedException;
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
 import br.com.rafaelyudi.todoList.Mapper.ModelMapperConverter;
+import br.com.rafaelyudi.todoList.Security.Role;
 import br.com.rafaelyudi.todoList.Security.TokenService;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +52,7 @@ public class UserService {
           var passEncode = this.passwordEncoder.encode(data.getPassword());
           var userModel = ModelMapperConverter.parseObject(data, UserModel.class);
           userModel.setPassword(passEncode);
+          userModel.setRole(Role.USER);
           var userDto = ModelMapperConverter.parseObject(this.userRepository.save(userModel), UserDTO.class);
           userDto.add(linkTo(methodOn(UserController.class).login(null)).withRel("Fazer login").withType("POST"));
           return userDto;

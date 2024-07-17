@@ -6,12 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 import br.com.rafaelyudi.todoList.Security.Role;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +28,7 @@ public class UserModel implements UserDetails {
     private String name; 
     private String password; 
     private String email;
+    @Enumerated(EnumType.STRING)
     private Role role;
 
 
@@ -50,7 +48,6 @@ public class UserModel implements UserDetails {
         this.password = password;
         this.email = email;
         this.createdAt = createdAt;
-        this.role = Role.USER;
     }
 
     public UUID getId() {

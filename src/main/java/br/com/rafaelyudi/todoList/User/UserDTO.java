@@ -3,6 +3,7 @@ package br.com.rafaelyudi.todoList.User;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import br.com.rafaelyudi.todoList.Security.Role;
 import org.springframework.hateoas.RepresentationModel;
 
 
@@ -22,8 +23,7 @@ public class UserDTO extends RepresentationModel<UserDTO>{
     private String password;
     private String email;
     private LocalDateTime createdAt;
-
-
+    private Role role;
     public UserDTO() {
     }
 
@@ -34,6 +34,8 @@ public class UserDTO extends RepresentationModel<UserDTO>{
         this.password = password;
         this.email = email;
         this.createdAt = createdAt;
+        this.role = Role.USER;
+
     }
 
     public UUID getKey() {
@@ -115,32 +117,16 @@ public class UserDTO extends RepresentationModel<UserDTO>{
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof UserDTO)) {
-            return false;
-        }
-        UserDTO userDTO = (UserDTO) o;
-        return Objects.equals(key, userDTO.key) && Objects.equals(username, userDTO.username) && Objects.equals(name, userDTO.name) && Objects.equals(password, userDTO.password) && Objects.equals(email, userDTO.email) && Objects.equals(createdAt, userDTO.createdAt);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+        UserDTO userDTO = (UserDTO) object;
+        return Objects.equals(getKey(), userDTO.getKey()) && Objects.equals(getUsername(), userDTO.getUsername()) && Objects.equals(getName(), userDTO.getName()) && Objects.equals(getPassword(), userDTO.getPassword()) && Objects.equals(getEmail(), userDTO.getEmail()) && Objects.equals(getCreatedAt(), userDTO.getCreatedAt()) && role == userDTO.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, username, name, password, email, createdAt);
+        return Objects.hash(super.hashCode(), getKey(), getUsername(), getName(), getPassword(), getEmail(), getCreatedAt(), role);
     }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " key='" + getKey() + "'" +
-            ", username='" + getUsername() + "'" +
-            ", name='" + getName() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            "}";
-    }
-
-    
 }
