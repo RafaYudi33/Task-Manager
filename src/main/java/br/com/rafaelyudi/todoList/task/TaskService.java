@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import br.com.rafaelyudi.todoList.User.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,10 @@ public class TaskService {
 
     @Autowired
     private ITaskRepository taskRepository;
-
     @Autowired
     private Utils utils;
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     public List<TaskModel> findTasksCloseStart() {
         LocalDateTime currentDate = LocalDateTime.now();
@@ -48,7 +51,7 @@ public class TaskService {
     }
 
     public TaskDTO createTask(TaskDTO data, HttpServletRequest request) {
-
+        logger.info("Register a task!");
         dateValidation(data);
         TaskModel task = ModelMapperConverter.parseObject(data, TaskModel.class);
 
@@ -64,6 +67,8 @@ public class TaskService {
     }
 
     public TaskDTO updateTask(TaskDTO dataTask, UUID id, HttpServletRequest request) {
+        logger.info("Update a task!");
+
         var task = this.taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
 
         var taskUpdated = utils.copyPartialProp(dataTask, task);
@@ -82,7 +87,7 @@ public class TaskService {
     }
 
     public TaskDTO findTaskById(UUID id) {
-
+        logger.info("Find a task by your ID");
         TaskModel taskModel = this.taskRepository.findById(id).orElseThrow(()-> new NotFoundException("Tarefa não encontrada!"));
 
         TaskDTO taskDto = ModelMapperConverter.parseObject(taskModel, TaskDTO.class);
@@ -106,7 +111,7 @@ public class TaskService {
     }
 
     public List<TaskDTO> getTaskSpecificUser(HttpServletRequest request) {
-
+        logger.info("Get a task from specific user!");
         var idUser = request.getAttribute("idUser");
         var tasks = taskRepository.findByIdUser((UUID)idUser);
         var tasksDTO = ModelMapperConverter.parseListObject(tasks, TaskDTO.class);
