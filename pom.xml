@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.rafaelyudi</groupId>
-	<artifactId>TaskManager</artifactId>
+	<artifactId>task-manager</artifactId>
 	<version>1.0.0</version>
 	<name>todoList</name>
 	<description>Task Manager</description>
@@ -118,11 +118,6 @@
 			<artifactId>spring-hateoas</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>

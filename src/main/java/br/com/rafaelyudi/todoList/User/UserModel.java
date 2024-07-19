@@ -31,8 +31,6 @@ public class UserModel implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-
-    
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt; 

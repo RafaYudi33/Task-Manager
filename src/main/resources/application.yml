@@ -1,6 +1,6 @@
 #file: noinspection undefined
 server:
-  port: 80
+  port: 8080
 cors:
   originPatterns: "http://localhost:8080,http://localhost:4200"
 aws:

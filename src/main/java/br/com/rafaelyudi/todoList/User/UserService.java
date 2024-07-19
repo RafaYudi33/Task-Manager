@@ -9,6 +9,8 @@ import br.com.rafaelyudi.todoList.Security.TokenService;
 import br.com.rafaelyudi.todoList.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,7 +45,10 @@ public class UserService {
      @Autowired
      TokenService tokenService;
 
+     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
      public UserDTO userCreate(UserDTO data) {
+          logger.info("Register a user!");
           var verifyUserAlreadyExists = this.userRepository.findByUsername(data.getUsername());
 
           if (verifyUserAlreadyExists != null) {
@@ -63,6 +68,7 @@ public class UserService {
      }
 
      public LoginResponseDTO login(UserCredentialsDTO credentials){
+          logger.info("Login a user!");
 
           try {
                var userPassAuth = new UsernamePasswordAuthenticationToken(credentials.username(), credentials.password());
