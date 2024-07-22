@@ -291,7 +291,7 @@ public class TaskServiceTest {
         assertEquals(result.getKey(), entity.getId());
         assertEquals(result.getPriority(), entity.getPriority());
         assertTrue(result.getLinks().toString().contains(
-                "</tasks/v1/userTasks>;rel=\"Listar todas as tarefas do mesmo usuário\";type=\"GET\",</tasks/v1>;rel=\"Criar outra tarefa\";type=\"POST\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Deletar esta tarefa\";type=\"DELETE\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Modificar esta tarefa\";type=\"PUT\""));
+                "</tasks/v1/userTasks>;rel=\"Listar todas as tarefas do mesmo usuário\";type=\"GET\",</tasks/v1/>;rel=\"Criar outra tarefa\";type=\"POST\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Deletar esta tarefa\";type=\"DELETE\",</tasks/v1/d8321483-b592-49ac-ba3b-46f32bea96ea>;rel=\"Modificar esta tarefa\";type=\"PUT\""));
 
         verify(repository,times(1)).findById(entity.getId());
     }

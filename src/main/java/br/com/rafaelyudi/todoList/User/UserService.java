@@ -64,6 +64,7 @@ public class UserService {
      }
 
      public void delete(HttpServletRequest request){
+          logger.info("Delete a user!");
           this.userRepository.deleteById((UUID)request.getAttribute("idUser"));
      }
 

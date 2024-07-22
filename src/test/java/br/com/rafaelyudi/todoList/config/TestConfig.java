@@ -15,5 +15,4 @@ public class TestConfig {
 
     public static final String basePathTask = "/tasks/v1";
 
-
 }

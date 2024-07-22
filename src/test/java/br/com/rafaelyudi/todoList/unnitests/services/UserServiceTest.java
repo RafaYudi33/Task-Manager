@@ -1,6 +1,7 @@
 package br.com.rafaelyudi.todoList.unnitests.services;
 
 import br.com.rafaelyudi.todoList.Errors.UserAlreadyExistsException;
+import br.com.rafaelyudi.todoList.Security.Role;
 import br.com.rafaelyudi.todoList.User.IUserRepository;
 import br.com.rafaelyudi.todoList.User.UserDTO;
 import br.com.rafaelyudi.todoList.User.UserModel;
@@ -52,12 +53,13 @@ public class UserServiceTest {
     @DisplayName("Should create user when everything is ok.")
     public void testCreateUserCase1(){
         UserDTO user = inputObject.mockUserDto(1); 
-        UserModel entity = inputObject.mockUserModel(1); 
-              
+        UserModel entity = inputObject.mockUserModel(1);
+
 
         when(repository.findByUsername(user.getUsername())).thenReturn(null);
         when(passwordEncoder.encode(anyString())).thenReturn(user.getPassword());
         when(repository.save(entity)).thenReturn(entity);
+        entity.setRole(Role.USER);
         
 
         var result = service.userCreate(user);
