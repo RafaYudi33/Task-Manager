@@ -30,10 +30,11 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
 
     private static String tokenUser;
 
+
     @BeforeAll
     public static void setUp(){
         objectMapper = ObjectMapperConfig.configureObjectMapper();
-        user = new UserDTO(null, "Rafael", "Rafael Yudi","1234","rafamail", null);
+        user = new UserDTO(null, "Rafael10", "Rafael Yudi","1234","rafamail", null);
     }
 
     @DisplayName("Should create user when everything is ok!")
@@ -60,7 +61,7 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
         user = objectMapper.readValue(content, UserDTO.class);
         assertNotNull(user);
         assertNotNull(user.getId());
-        assertEquals("Rafael", user.getUsername());
+        assertEquals("Rafael10", user.getUsername());
         assertEquals("Rafael Yudi", user.getName());
     }
 
@@ -91,7 +92,7 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
     @Test
     @Order(3)
     public void loginUserTestCase1(){
-        UserCredentialsDTO credentials = new UserCredentialsDTO("Rafael","1234");
+        UserCredentialsDTO credentials = new UserCredentialsDTO("Rafael10","1234");
 
         tokenUser = given()
                 .basePath(TestConfig.basePathUser)
@@ -108,6 +109,8 @@ public class UserControllerWithJsonTest extends AbstractIntegrationTest{
                 .extract()
                 .body()
                 .as(LoginResponseDTO.class).token();
+
+        assertNotNull(tokenUser);
 
         specification = new RequestSpecBuilder()
                 .setBasePath(TestConfig.basePathUser)
