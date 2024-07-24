@@ -27,6 +27,10 @@ jobs:
     - name: Build Application JAR
       working-directory: ./Task-Manager
       run: mvn clean package
+      env:
+        AWS_ACCESS_KEY: ${{ secrets.AWS__ACCESS_KEY }}
+        AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+        SECURITY_JWT_SECRETKEY: ${{ secrets.SECURITY_JWT_SECRETKEY }}
 
     - name: Docker Compose Build
       working-directory: ./
