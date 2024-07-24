@@ -28,9 +28,6 @@ services:
       SPRING.DATASOURCE.URL: jdbc:mysql://db:3308/task-manager?useTimezone=true&serverTimezone=UTC
       SPRING.DATASOURCE.USERNAME: root
       SPRING.DATASOURCE.PASSWORD: root123
-      AWS.CREDENTIALS.ACCESSKEY: AKIA2FCGGSOA3UFAGKXX
-      AWS.CREDENTIALS.SECRETKEY: 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
-      SECURITY.JWT.SECRETKEY: rafs3452
     ports:
       - 8080:8080
     command: mvn spring-boot:run
