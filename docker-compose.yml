@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      MYSQL_ROOT_PASSWORD: ${DB_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_USER: docker
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: task-manager
