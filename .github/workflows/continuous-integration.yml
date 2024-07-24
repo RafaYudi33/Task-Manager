@@ -25,11 +25,11 @@ jobs:
         cache: maven
 
     - name: Build Application JAR
-      working-directory: ./Task-Manager/Task-Manager
+      working-directory: ./Task-Manager
       run: mvn clean package
 
     - name: Docker Compose Build
-      working-directory: ./Task-Manager
+      working-directory: ./
       run: docker compose build
 
     - name: Push to Docker Hub Container Registry
