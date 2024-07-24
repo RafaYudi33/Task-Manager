@@ -6,9 +6,9 @@ services:
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_PASSWORD: ${DB_USER}
       MYSQL_USER: docker
-      MYSQL_PASSWORD: root123
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: task-manager
       MYSQL_ROOT_HOST: '%'
       MYSQL_TCP_PORT: 3308
@@ -26,8 +26,8 @@ services:
     environment:
       TZ: America/Sao_Paulo
       SPRING.DATASOURCE.URL: jdbc:mysql://db:3308/task-manager?useTimezone=true&serverTimezone=UTC
-      SPRING.DATASOURCE.USERNAME: root
-      SPRING.DATASOURCE.PASSWORD: root123
+      SPRING.DATASOURCE.USERNAME: ${DB_USER}
+      SPRING.DATASOURCE.PASSWORD: ${DB_PASSWORD}
     ports:
       - 8080:8080
     command: mvn spring-boot:run

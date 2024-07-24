@@ -34,6 +34,9 @@ jobs:
 
     - name: Docker Compose Build
       working-directory: ./
+      env:
+        DB_USER: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: docker compose build
 
     - name: Push to Docker Hub Container Registry
