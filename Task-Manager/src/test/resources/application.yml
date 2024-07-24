@@ -12,7 +12,7 @@ aws:
     secretKey: ${AWS_SECRET_KEY}
 security:
   jwt:
-    secretKey: secretTest
+    secretKey: ${secretKey}
     expirationInMillisecond: 1800000
 server:
   port: 8888
