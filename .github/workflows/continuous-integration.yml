@@ -47,7 +47,7 @@ jobs:
     - name: Docker Compose Build
       working-directory: ./
       env:
-        DB_URL: ${{secrets.DB.URL}}
+        DB_URL: ${{secrets.DB_URL}}
         DB_USER: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: docker compose build
