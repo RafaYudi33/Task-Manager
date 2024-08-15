@@ -48,7 +48,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/users/v1/register").permitAll()
                         .requestMatchers("/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/users/v1/login").permitAll().anyRequest().hasRole("USER")
+                                "/users/v1/login",
+                                "/email").permitAll().anyRequest().hasRole("USER")
 
                 )
                 .cors(cors -> {})

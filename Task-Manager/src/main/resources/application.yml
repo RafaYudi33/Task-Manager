@@ -14,9 +14,9 @@ security:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://task-manager.c9qoqwumq5pj.us-east-1.rds.amazonaws.com:3306/task_manager?useTimezone=true&serverTimezone=UTC
-    username: docker
-    password: root1234
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
   jpa:
     open-in-view: false
     hibernate:
@@ -25,3 +25,5 @@ spring:
     #   hibernate:
     #     dialect: org.hibernate.dialect.MySQLDialect
     show-sql: false
+  jackson:
+    time-zone: America/Sao_Paulo
