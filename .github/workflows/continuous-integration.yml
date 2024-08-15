@@ -57,7 +57,7 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/task-manager:latest ${{ secrets.DOCKER_USERNAME }}/task-manager:${{ github.run_id }}
 
         docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:${{ github.run_id }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:lates
+        docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:latest
     
     - name: Tag and Push image to AWS ECR
       run: |
