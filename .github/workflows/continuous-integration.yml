@@ -16,6 +16,17 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS__ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
     
     - name: Set up JDK 17
       uses: actions/setup-java@v3
@@ -23,6 +34,7 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
         cache: maven
+
 
     - name: Build Application JAR
       working-directory: ./Task-Manager
@@ -35,6 +47,7 @@ jobs:
     - name: Docker Compose Build
       working-directory: ./
       env:
+        DB_URL: ${{secrets.DB.URL}}
         DB_USER: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: docker compose build
@@ -44,4 +57,13 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/task-manager:latest ${{ secrets.DOCKER_USERNAME }}/task-manager:${{ github.run_id }}
 
         docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:${{ github.run_id }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:lates
+    
+    - name: Tag and Push image to AWS ECR
+      run: |
+        docker tag ${{ secrets.DOCKER_USERNAME }}/task-manager:latest ${{ secrets.AWS_ECR_REPO_URL }}:${{ github.run_id }}
+        docker tag ${{ secrets.DOCKER_USERNAME }}/task-manager:latest ${{ secrets.AWS_ECR_REPO_URL }}:latest
+
+        docker push ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:latest
+        docker push ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.run_id }}
+        
