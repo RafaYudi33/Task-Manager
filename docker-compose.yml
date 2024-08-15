@@ -7,7 +7,7 @@ services:
     environment:
       TZ: America/Sao_Paulo
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: docker
+      MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: task-manager
       MYSQL_ROOT_HOST: '%'
@@ -25,7 +25,7 @@ services:
     working_dir: /Task-Manager
     environment:
       TZ: America/Sao_Paulo
-      SPRING.DATASOURCE.URL: jdbc:mysql://db:3308/task-manager?useTimezone=true&serverTimezone=UTC
+      SPRING.DATASOURCE.URL: ${DB_URL}
       SPRING.DATASOURCE.USERNAME: ${DB_USER}
       SPRING.DATASOURCE.PASSWORD: ${DB_PASSWORD}
     ports:
