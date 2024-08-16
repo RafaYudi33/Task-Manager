@@ -1,7 +1,11 @@
 
 <h1 align="center" style="font-weight: bold;">Task Manager API 💻</h1>
 
-
+<div align="center">
+  <a href="https://github.com/RafaYudi33/Task-Manager/actions/workflows/continuous-integration.yml">
+    <img src="https://github.com/RafaYudi33/Task-Manager/actions/workflows/continuous-integration.yml/badge.svg" alt="Continuous Integration with Github Actions">
+  </a>
+</div>
 
 <div align="center" style="display: flex; justify-content: center;">
   <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" alt="java">
