@@ -20,7 +20,7 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS__ACCESS_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
@@ -47,7 +47,7 @@ jobs:
     - name: Docker Compose Build
       working-directory: ./
       env:
-        DB_URL: ${{secrets.DB.URL}}
+        DB_URL: ${{secrets.DB_URL}}
         DB_USER: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: docker compose build
@@ -57,7 +57,7 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/task-manager:latest ${{ secrets.DOCKER_USERNAME }}/task-manager:${{ github.run_id }}
 
         docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:${{ github.run_id }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:lates
+        docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:latest
     
     - name: Tag and Push image to AWS ECR
       run: |
@@ -66,4 +66,23 @@ jobs:
 
         docker push ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:latest
         docker push ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.run_id }}
-        
+
+    - name: Download task definition
+      run: |
+        aws ecs describe-task-definition --task-definition ${{secrets.AWS_TASK_DEFINITION}} --query taskDefinition > task-definition.json
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        container-name: TaskManagerContainer
+        image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:latest
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{secrets.AWS_ECS_SERVICE}}
+        cluster: ${{secrets.AWS_ECS_CLUSTER}}
+        wait-for-service-stability: true
