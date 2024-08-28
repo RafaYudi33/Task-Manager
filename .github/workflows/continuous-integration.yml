@@ -17,24 +17,12 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-    
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'adopt'
         cache: maven
-
 
     - name: Build Application JAR
       working-directory: ./Task-Manager
@@ -43,6 +31,11 @@ jobs:
         AWS_ACCESS_KEY: ${{ secrets.AWS__ACCESS_KEY }}
         AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
         SECURITY_JWT_SECRETKEY: ${{ secrets.SECURITY_JWT_SECRETKEY }}
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@v3.0.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Docker Compose Build
       working-directory: ./
@@ -59,30 +52,3 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:${{ github.run_id }}
         docker push ${{ secrets.DOCKER_USERNAME }}/task-manager:latest
     
-    - name: Tag and Push image to AWS ECR
-      run: |
-        docker tag ${{ secrets.DOCKER_USERNAME }}/task-manager:latest ${{ secrets.AWS_ECR_REPO_URL }}:${{ github.run_id }}
-        docker tag ${{ secrets.DOCKER_USERNAME }}/task-manager:latest ${{ secrets.AWS_ECR_REPO_URL }}:latest
-
-        docker push ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:latest
-        docker push ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.run_id }}
-
-    - name: Download task definition
-      run: |
-        aws ecs describe-task-definition --task-definition ${{secrets.AWS_TASK_DEFINITION}} --query taskDefinition > task-definition.json
-
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: task-definition.json
-        container-name: TaskManagerContainer
-        image: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.AWS_ECR_REPOSITORY }}:latest
-
-    - name: Deploy Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-      with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{secrets.AWS_ECS_SERVICE}}
-        cluster: ${{secrets.AWS_ECS_CLUSTER}}
-        wait-for-service-stability: true
