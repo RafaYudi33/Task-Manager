@@ -49,7 +49,7 @@ jobs:
         SECURITY_JWT_SECRETKEY: ${{ secrets.SECURITY_JWT_SECRETKEY }}
       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
        -Dsonar.projectKey=RafaYudi33_Task-Manager \
-       -Dsonar.projectName="task-manager"
+       -Dsonar.projectName="Task-manager"
 
 
     - name: Build Application JAR
