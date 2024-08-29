@@ -110,6 +110,7 @@ mvn spring-boot:run
 </div>
 <br>
 
+
 <h2 id="email">📧 Simple Email Service</h2>
 
 The application uses Amazon's Simple Email Service (SES) for sending emails. Since this is a personal project, I used the free tier of SES. In this version, it's necessary to verify the email addresses that will be used to send or receive emails.
