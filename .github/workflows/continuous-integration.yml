@@ -47,7 +47,9 @@ jobs:
         AWS_ACCESS_KEY: ${{ secrets.AWS__ACCESS_KEY }}
         AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
         SECURITY_JWT_SECRETKEY: ${{ secrets.SECURITY_JWT_SECRETKEY }}
-      run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=RafaYudi33_Task-Manager
+      run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+       -Dsonar.projectKey=RafaYudi33_Task-Manager \
+       -Dsonar.projectName="task-manager"
 
 
     - name: Build Application JAR
