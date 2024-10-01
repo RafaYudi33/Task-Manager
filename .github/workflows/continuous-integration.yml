@@ -59,13 +59,10 @@ jobs:
         AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
         SECURITY_JWT_SECRETKEY: ${{ secrets.SECURITY_JWT_SECRETKEY }}
 
-    - name: Docker Compose Build
-      working-directory: ./
-      env:
-        DB_URL: ${{secrets.DB_URL}}
-        DB_USER: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: docker compose build
+    - name: Docker Build
+      working-directory: ./Task-Manager
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/task-manager:latest .
 
     - name: Push to Docker Hub Container Registry
       run: |
