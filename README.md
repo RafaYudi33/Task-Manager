@@ -117,5 +117,5 @@ mvn spring-boot:run
 
 The application uses Amazon's Simple Email Service (SES) for sending emails. Since this is a personal project, I used the free tier of SES. In this version, it's necessary to verify the email addresses that will be used to send or receive emails.
 
-The application is configured to invoke the service every day at 18:00. However, to allow users to test immediately, I have enabled an endpoint <kbd>POST /email</kbd>.
+The application is configured to invoke the service every hour. However, to allow users to test immediately, I have enabled an endpoint <kbd>POST /email</kbd>.
 
