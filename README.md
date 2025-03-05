@@ -63,7 +63,7 @@ security.jwt.secretKey= ${YOUR_SECRET_KEY}
 Before running the application, make sure to set up the necessary database configuration. Use the provided `application.properties.example` file as a reference to create your configuration file named `application.properties` with your configuration.
 
 ```yaml
-spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name
+spring.datasource.url=jdbc:mysql://localhost:3306/your_database
 spring.datasource.username=your_database_username
 spring.datasource.password=your_database_password
 ```
